@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.3",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "enterprise-leave-management",
+    "libraryId": "8f4a0b5c-184e-4ebb-b79f-9ab71a26686a",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "enterprise-leave-management",
+    "solutionShortDescription": "enterprise-leave-management description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

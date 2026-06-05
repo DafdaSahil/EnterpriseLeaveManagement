@@ -1,0 +1,359 @@
+/* ──────────────────────────────────────────────────────────────
+   Apply Leave Component Styles
+   ────────────────────────────────────────────────────────────── */
+
+.applyLeaveContainer {  
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.pageHeader {
+  margin-bottom: 32px;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.pageSubtitle {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+/* Form Card */
+.formCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e2e8f0;
+}
+
+.leaveForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Group */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.required {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+/* Inputs */
+.input,
+.textarea {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  background: #ffffff;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background: #f8fafc;
+}
+
+.input.error,
+.textarea.error,
+.datePickerControl.error .ms-TextField-fieldGroup {
+  border-color: #dc2626;
+}
+
+.input.error:focus,
+.textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-size: 14px;
+}
+
+.datePickerControl .ms-TextField-fieldGroup {
+  /* min-height: 42px; */
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.datePickerControl .ms-TextField-field {
+  font-size: 14px;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  color: #0f172a;
+}
+
+.datePickerControl .ms-TextField-fieldGroup:hover {
+  border-color: #94a3b8;
+}
+
+.datePickerControl .ms-TextField-fieldGroup::after {
+  border: none;
+}
+
+/* Error Message */
+.errorMessage {
+  font-size: 13px;
+  color: #dc2626;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  margin-top: -4px;
+}
+
+/* Info Box */
+.infoBox {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f0f9ff;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+}
+
+.infoBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+}
+
+.infoLabel {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.infoBadgeValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2563eb;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.infoBadgeValue.success {
+  color: #16a34a;
+}
+
+.infoBadgeValue.warning {
+  color: #d97706;
+}
+
+.holidayInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+}
+
+.holidayInfoTitle {
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.holidayChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.holidayChip {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #fcd34d;
+  color: #78350f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Balance Card */
+.balanceCard {
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.balanceTitle {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.balanceItems {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.balanceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.balanceItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balanceItemLabel {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.balanceItemCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563eb;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+.progressBar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Form Buttons */
+.formButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.btnCancel,
+.btnSubmit {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnCancel {
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+.btnCancel:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.btnCancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSubmit {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btnSubmit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.btnSubmit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btnSubmit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .formCard {
+    padding: 20px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+  }
+
+  .formButtons {
+    flex-direction: column-reverse;
+  }
+
+  .btnCancel,
+  .btnSubmit {
+    width: 100%;
+  }
+
+  .infoBox {
+    flex-direction: column;
+  }
+}

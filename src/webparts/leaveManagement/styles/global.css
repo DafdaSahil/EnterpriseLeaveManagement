@@ -1,0 +1,183 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#sp-appBar {
+  display: none !important;
+}
+
+.dflex {
+  display: flex !important;
+}
+
+.dInlineBlock {
+  display: inline-block !important;
+}
+
+[data-automation-id="pageHeader"],
+.webPartContainer {
+  display: none !important;
+}
+
+#SuiteNavWrapper {
+  display: none !important;
+}
+
+#myAction {
+  display: block;
+}
+
+#myShowAll {
+  display: none;
+}
+
+#dropdownSearch {
+  display: none;
+}
+
+#spLeftNav,
+#spCommandBar,
+#CommentsWrapper,
+#workbenchCommandBar,
+#spTopPlaceholder,
+footer,
+#spSiteHeader {
+  display: none !important;
+}
+
+.spAppAndPropertyPanelContainer {
+  padding: 0 !important;
+}
+
+.CanvasZone {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.r_DTWsp_y298L:not(.f_Ho0u7_y298L):not(.f_TW2uh_y298L) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.r_NLtZH_y298L:not(.f_bHim3_y298L) .s_wDEw-_y298L {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.a_812HM_1x34n {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.p_pANWZ_1x34n {
+  overflow-y: auto;
+}
+
+.r_SL6Vs_y298L:not(.f_5KSB4_y298L) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sp-pageLayout-horizontalNav {
+  border-radius: 0 !important;
+}
+
+.a_4sVuX_1x34n {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   COLOR TOKENS
+   ────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Primary Colors */
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --primary-light: #dbeafe;
+
+  /* Success Colors */
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --success-dark: #047857;
+
+  /* Warning Colors */
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --warning-dark: #d97706;
+
+  /* Danger Colors */
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --danger-dark: #dc2626;
+
+  /* Neutral Colors */
+  --gray-0: #ffffff;
+  --gray-1: #f8fafc;
+  --gray-2: #f1f5f9;
+  --gray-3: #e2e8f0;
+  --gray-4: #cbd5e1;
+  --gray-5: #94a3b8;
+  --gray-6: #64748b;
+  --gray-7: #475569;
+  --gray-8: #334155;
+  --gray-9: #1e293b;
+  --gray-10: #0f172a;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.15);
+
+  /* Transition */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Global Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-5);
+}

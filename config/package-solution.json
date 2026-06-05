@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "enterprise-leave-management-client-side-solution",
+    "id": "8f4a0b5c-184e-4ebb-b79f-9ab71a26686a",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "enterprise-leave-management description"
+      },
+      "longDescription": {
+        "default": "enterprise-leave-management description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "enterprise-leave-management Feature",
+        "description": "The feature that activates elements of the enterprise-leave-management solution.",
+        "id": "66eda419-8308-4cd6-a303-ff670f388141",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/enterprise-leave-management.sppkg"
+  }
+}

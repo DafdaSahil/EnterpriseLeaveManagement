@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "leave-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/leaveManagement/LeaveManagementWebPart.js",
+          "manifest": "./src/webparts/leaveManagement/LeaveManagementWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "LeaveManagementWebPartStrings": "lib/webparts/leaveManagement/loc/{locale}.js"
+  }
+}
