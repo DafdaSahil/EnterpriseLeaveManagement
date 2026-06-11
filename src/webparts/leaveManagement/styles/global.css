@@ -181,3 +181,13 @@ footer,
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gray-5);
 }
+
+.a_8VK76_1x34n {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.r_Ab1x8_y298L:not(.f_i54d6_y298L):not(.f_SHsQP_y298L) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
