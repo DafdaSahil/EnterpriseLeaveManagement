@@ -10,7 +10,7 @@ export interface IEmployee {
    */
   Password?: string;
   Department?: string;
-  Designation?: string;
+
   Role: "Admin" | "Manager" | "Employee";
   Manager?: string;
   IsActive?: boolean;

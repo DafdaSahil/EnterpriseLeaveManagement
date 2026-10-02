@@ -25,7 +25,12 @@ export const hasRouteAccess = (
   user: IUser,
   route: string,
 ): boolean => {
-  const sharedRoutes = ["/dashboard", "/apply-leave", "/my-leave-history"];
+  const sharedRoutes = [
+    "/dashboard",
+    "/apply-leave",
+    "/my-leave-history",
+    "/profile",
+  ];
 
   const referenceRoutes = ["/holiday-calendar", "/leave-policy"];
 

@@ -6,7 +6,7 @@ export interface IUser {
   Password?: string;
   Role: "Admin" | "Manager" | "Employee";
   Department?: string;
-  Designation?: string;
+
   IsActive?: boolean;
   LoginType?: "microsoft" | "local";
 }

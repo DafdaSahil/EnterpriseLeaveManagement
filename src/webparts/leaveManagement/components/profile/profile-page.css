@@ -1,0 +1,77 @@
+/* ──────────────────────────────────────────────────────────────
+   PROFILE PAGE
+   ────────────────────────────────────────────────────────────── */
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+  animation: slideInUp 0.45s ease;
+}
+
+.profileCard {
+  padding: 0;
+  overflow: hidden;
+}
+
+.profileCard .panelHeader {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e6eef8;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.profileBody {
+  padding: 24px;
+}
+
+.roleBadge {
+  margin-bottom: 4px;
+}
+
+.hintText {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.checkboxGroup {
+  margin-bottom: 20px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.profileLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #64748b;
+}
+
+.profileLoading p {
+  margin-top: 12px;
+  font-size: 14px;
+}

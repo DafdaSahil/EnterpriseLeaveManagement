@@ -8,8 +8,13 @@ import "./Login.css";
 
 const Login = (): JSX.Element => {
   const navigate = useNavigate();
-  const { login, loginWithMicrosoft, user, isLoading, error: authError } =
-    React.useContext(AuthContext);
+  const {
+    login,
+    loginWithMicrosoft,
+    user,
+    isLoading,
+    error: authError,
+  } = React.useContext(AuthContext);
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -44,7 +49,9 @@ const Login = (): JSX.Element => {
       }
 
       if (employee.IsActive === false) {
-        setError("Your account has been deactivated. Please contact your administrator.");
+        setError(
+          "Your account has been deactivated. Please contact your administrator.",
+        );
         setIsLocalLoading(false);
         return;
       }
@@ -74,25 +81,7 @@ const Login = (): JSX.Element => {
       setIsMicrosoftLoading(true);
       setError("");
 
-      const spEmail = (window as any).__spPageContext?.user?.email ||
-        (window as any)._spPageContext?.user?.email ||
-        "";
-
-      const contextEmail = (window as any).__leaveManagementContext?.pageContext?.user?.email || "";
-
-      const userEmail = spEmail || contextEmail;
-
-      if (!userEmail) {
-        setError("Unable to retrieve your Microsoft account. Please use local login.");
-        setIsMicrosoftLoading(false);
-        return;
-      }
-
-      const displayName = (window as any).__spPageContext?.user?.displayName ||
-        (window as any)._spPageContext?.user?.displayName ||
-        "";
-
-      const success = await loginWithMicrosoft(userEmail, displayName);
+      const success = await loginWithMicrosoft();
 
       if (success) {
         const storedUser = sessionStorage.getItem("user");
@@ -135,11 +124,41 @@ const Login = (): JSX.Element => {
         <div className="loginBranding">
           <div className="brandingContent">
             <div className="brandLogo">
-              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width={28} height={28}>
-                <rect x="3" y="3" width="6" height="6" rx="1.5" fill="white" fillOpacity={0.9} />
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                width={28}
+                height={28}
+              >
+                <rect
+                  x="3"
+                  y="3"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="white"
+                  fillOpacity={0.9}
+                />
                 <rect x="11" y="3" width="6" height="6" rx="1.5" fill="white" />
-                <rect x="3" y="11" width="6" height="6" rx="1.5" fill="white" fillOpacity={0.6} />
-                <rect x="11" y="11" width="6" height="6" rx="1.5" fill="white" fillOpacity={0.4} />
+                <rect
+                  x="3"
+                  y="11"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="white"
+                  fillOpacity={0.6}
+                />
+                <rect
+                  x="11"
+                  y="11"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="white"
+                  fillOpacity={0.4}
+                />
               </svg>
             </div>
             <h1 className="brandingTitle">LeaveDesk</h1>
@@ -166,7 +185,9 @@ const Login = (): JSX.Element => {
           <div className="loginCard">
             <div className="cardHeader">
               <h2 className="cardTitle">Welcome back</h2>
-              <p className="cardSubtitle">Sign in to manage your leave requests</p>
+              <p className="cardSubtitle">
+                Sign in to manage your leave requests
+              </p>
             </div>
 
             <button
@@ -177,14 +198,23 @@ const Login = (): JSX.Element => {
               {isMicrosoftLoading ? (
                 <span className="spinner" />
               ) : (
-                <svg width={18} height={18} viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  width={18}
+                  height={18}
+                  viewBox="0 0 21 21"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <rect x="1" y="1" width="9" height="9" fill="#f25022" />
                   <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
                   <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
                   <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
                 </svg>
               )}
-              <span>{isMicrosoftLoading ? "Signing in..." : "Sign in with Microsoft"}</span>
+              <span>
+                {isMicrosoftLoading
+                  ? "Signing in..."
+                  : "Sign in with Microsoft"}
+              </span>
             </button>
 
             <div className="divider">
@@ -192,12 +222,10 @@ const Login = (): JSX.Element => {
             </div>
 
             <div className="fieldGroup">
-              <label className="label" htmlFor="email">Email address</label>
+              <label className="label" htmlFor="email">
+                Email address
+              </label>
               <div className="inputWrap">
-                <svg className="inputIcon" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
                 <input
                   id="email"
                   className="input"
@@ -212,12 +240,10 @@ const Login = (): JSX.Element => {
             </div>
 
             <div className="fieldGroup">
-              <label className="label" htmlFor="password">Password</label>
+              <label className="label" htmlFor="password">
+                Password
+              </label>
               <div className="inputWrap">
-                <svg className="inputIcon" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
                 <input
                   id="password"
                   className="input"
@@ -235,13 +261,31 @@ const Login = (): JSX.Element => {
                   onClick={() => setShowPassword((v) => !v)}
                 >
                   {showPassword ? (
-                    <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width={17}
+                      height={17}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                       <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                       <line x1="1" y1="1" x2="23" y2="23" />
                     </svg>
                   ) : (
-                    <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width={17}
+                      height={17}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
                     </svg>
@@ -251,27 +295,47 @@ const Login = (): JSX.Element => {
             </div>
 
             <div className="forgotRow">
-              <a href="#" className="forgotLink">Forgot password?</a>
+              <a href="#" className="forgotLink">
+                Forgot password?
+              </a>
             </div>
 
             {(error || authError) && (
-              <p className="errorMsg" role="alert">{error || authError}</p>
+              <p className="errorMsg" role="alert">
+                {error || authError}
+              </p>
             )}
 
-            <button className="submitBtn" onClick={handleLocalLogin} disabled={isLocalLoading}>
+            <button
+              className="submitBtn"
+              onClick={handleLocalLogin}
+              disabled={isLocalLoading}
+            >
               {isLoading ? (
                 <span className="spinner light" />
               ) : (
                 <>
                   Sign in
-                  <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg
+                    width={17}
+                    height={17}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </>
               )}
             </button>
 
-            <p className="footerNote">Protected by enterprise-grade SSO &amp; 2FA</p>
+            <p className="footerNote">
+              Protected by enterprise-grade SSO &amp; 2FA
+            </p>
           </div>
         </div>
       </div>

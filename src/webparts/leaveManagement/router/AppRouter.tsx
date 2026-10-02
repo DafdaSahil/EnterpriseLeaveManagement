@@ -14,6 +14,7 @@ import LeaveList from "../components/leave/LeaveList";
 import MyLeaveHistory from "../components/leave/MyLeaveHistory";
 import HolidayCalendar from "../components/holiday/HolidayCalendar";
 import LeavePolicy from "../components/policy/LeavePolicy";
+import ProfilePage from "../components/profile/ProfilePage";
 
 interface IAppRouterProps {
   context: any;
@@ -86,6 +87,15 @@ const AppRouter = ({ context }: IAppRouterProps): JSX.Element => {
             element={
               <ProtectedRoute>
                 <LeavePolicy />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />

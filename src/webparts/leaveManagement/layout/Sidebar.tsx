@@ -1,8 +1,23 @@
 import * as React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { menuItems } from "../utils/menuData";
 import "./sidebar.css";
+
+const ThreeDotsIcon = (): JSX.Element => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <circle cx="8" cy="3" r="1.5" />
+    <circle cx="8" cy="8" r="1.5" />
+    <circle cx="8" cy="13" r="1.5" />
+  </svg>
+);
 
 const BrandIcon = (): JSX.Element => (
   <svg
@@ -57,14 +72,38 @@ const getInitials = (name?: string): string => {
 
 const Sidebar = (): JSX.Element => {
   const { user } = React.useContext(AuthContext);
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = React.useState<boolean>(false);
+  const menuRef = React.useRef<HTMLDivElement | null>(null);
 
   const filteredMenus = menuItems.filter(
     (menu) => menu.roles.indexOf(user?.Role || "") > -1,
   );
 
-  // Separate admin-only items if you want section grouping.
-  // Here we render all in one list; extend menuData with a `section` field
-  // if you need "Main" / "Admin" labels.
+  // Close the dropdown when clicking anywhere outside of it.
+  React.useEffect((): (() => void) => {
+    if (!menuOpen) {
+      return () => {
+        // no-op
+      };
+    }
+
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
+  const handleUpdateProfile = (): void => {
+    setMenuOpen(false);
+    navigate("/profile");
+  };
 
   return (
     <nav className="sidebar" aria-label="Main navigation">
@@ -101,7 +140,7 @@ const Sidebar = (): JSX.Element => {
 
       {/* Footer / user block */}
       <div className="sidebarFooter">
-        <div className="userBlock">
+        <div className="userBlock" ref={menuRef}>
           <div className="avatar" aria-hidden="true">
             {getInitials(user?.DisplayName || user?.Email)}
           </div>
@@ -110,6 +149,27 @@ const Sidebar = (): JSX.Element => {
               {user?.DisplayName || user?.Email || "User"}
             </span>
             <span className="userRole">{user?.Role}</span>
+          </div>
+          <div className="userMenu">
+            <button
+              className="menuTrigger"
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="User menu"
+              aria-expanded={menuOpen}
+            >
+              <ThreeDotsIcon />
+            </button>
+            {menuOpen && (
+              <div className="dropdownMenu" role="menu">
+                <button
+                  className="dropdownItem"
+                  role="menuitem"
+                  onClick={handleUpdateProfile}
+                >
+                  Update Profile
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

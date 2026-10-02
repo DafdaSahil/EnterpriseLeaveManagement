@@ -35,7 +35,7 @@ const escapeOData = (value: string | undefined): string =>
  * where anyone could read it from DevTools.
  */
 const EMPLOYEE_FIELDS =
-  "Id, Title, Name, Email, Department, Designation, Role, Manager, IsActive, Created";
+  "Id, Title, Name, Email, Department, Role, Manager, IsActive, Created";
 
 // ────────────────────────────────────────────────────────────
 // LEAVE OPERATIONS
@@ -443,6 +443,69 @@ export const getEmployeeByEmail = async (
     return undefined;
   } catch (error) {
     console.error("Error fetching employee by email:", error);
+    throw error;
+  }
+};
+
+/**
+ * Updates an employee's own profile. Only the fields an employee is allowed
+ * to edit are written - Role, Manager, Email and IsActive are admin-owned and
+ * are never touched here.
+ */
+export const updateOwnProfile = async (
+  employeeId: number,
+  data: { Name?: string; Department?: string },
+): Promise<void> => {
+  try {
+    const sp = getSP();
+    await sp.web.lists
+      .getByTitle("Employees")
+      .items.getById(employeeId)
+      .update({
+        Title: data.Name,
+        Department: data.Department,
+      });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    throw error;
+  }
+};
+
+/**
+ * Changes an employee's password after verifying the current one.
+ * Returns true on success, false when the current password does not match.
+ */
+export const changePassword = async (
+  employeeId: number,
+  currentPassword: string,
+  newPassword: string,
+): Promise<boolean> => {
+  try {
+    const sp = getSP();
+
+    // Verify the current password before allowing the change.
+    const matches = await sp.web.lists
+      .getByTitle("Employees")
+      .items.filter(
+        `Id eq ${employeeId} and Password eq '${escapeOData(currentPassword)}'`,
+      )
+      .select("Id")
+      .top(1)();
+
+    if (matches.length === 0) {
+      return false;
+    }
+
+    await sp.web.lists
+      .getByTitle("Employees")
+      .items.getById(employeeId)
+      .update({
+        Password: newPassword,
+      });
+
+    return true;
+  } catch (error) {
+    console.error("Error changing password:", error);
     throw error;
   }
 };

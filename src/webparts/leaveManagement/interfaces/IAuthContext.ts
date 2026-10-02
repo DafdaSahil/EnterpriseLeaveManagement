@@ -6,6 +6,6 @@ export interface IAuthContext {
   error: string | undefined;
 
   login: (userData: IUser) => void;
-  loginWithMicrosoft: (email: string, displayName: string) => Promise<boolean>;
+  loginWithMicrosoft: () => Promise<boolean>;
   logout: () => void;
 }

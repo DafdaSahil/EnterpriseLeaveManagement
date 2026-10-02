@@ -49,4 +49,11 @@ export const menuItems: IMenuItem[] = [
     path: "/employees",
     roles: ["Admin"],
   },
+
+  {
+    key: "profile",
+    label: "My Profile",
+    path: "/profile",
+    roles: ["Admin", "Manager", "Employee"],
+  },
 ];

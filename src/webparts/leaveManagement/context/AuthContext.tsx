@@ -31,13 +31,27 @@ export const AuthProvider = ({
     setUser(userData);
   };
 
-  const loginWithMicrosoft = async (
-    email: string,
-    displayName: string,
-  ): Promise<boolean> => {
+  const loginWithMicrosoft = async (): Promise<boolean> => {
     try {
       setIsLoading(true);
       setError(undefined);
+
+      // Read the current user's email and display name directly from the
+      // SPFx page context. This is the reliable, supported way to get the
+      // logged-in user's identity (window._spPageContextInfo is not available
+      // on modern pages, and the old __spPageContext/_spPageContext globals
+      // were never set by this app).
+      const email: string | undefined = context?.pageContext?.user?.email;
+      const displayName: string =
+        context?.pageContext?.user?.displayName || "";
+
+      if (!email) {
+        setError(
+          "Unable to retrieve your Microsoft account. Please use local login.",
+        );
+        setIsLoading(false);
+        return false;
+      }
 
       const employee = await getEmployeeByEmail(email, context);
 
@@ -61,7 +75,7 @@ export const AuthProvider = ({
         Email: employee.Email,
         Role: employee.Role,
         Department: employee.Department,
-        Designation: employee.Designation,
+
         IsActive: employee.IsActive,
         LoginType: "microsoft",
       };
