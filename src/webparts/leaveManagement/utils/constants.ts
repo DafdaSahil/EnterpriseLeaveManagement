@@ -16,6 +16,15 @@ export const COMPANY_HOLIDAYS = [
 ];
 
 // ────────────────────────────────────────────────────────────
+// Half Day Types
+// ────────────────────────────────────────────────────────────
+export const HALF_DAY_TYPES = [
+  { label: "Full Day", value: "None" },
+  { label: "First Half (AM)", value: "FirstHalf" },
+  { label: "Second Half (PM)", value: "SecondHalf" },
+] as const;
+
+// ────────────────────────────────────────────────────────────
 // Status Types
 // ────────────────────────────────────────────────────────────
 export const LEAVE_STATUS = {

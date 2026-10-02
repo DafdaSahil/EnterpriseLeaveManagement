@@ -6,6 +6,7 @@ import {
   deleteLeave,
   getEmployees,
   getLeaves,
+  getLeavesByManager,
   updateLeave,
 } from "../../services/SPService";
 import { LEAVE_TYPES, STATUS_COLORS, MESSAGES } from "../../utils/constants";
@@ -45,7 +46,10 @@ const LeaveList = (): JSX.Element => {
   const fetchLeaves = async (): Promise<void> => {
     setLoading(true);
     try {
-      const data = await getLeaves();
+      const data =
+        user?.Role === "Manager"
+          ? await getLeavesByManager(user.Email)
+          : await getLeaves();
       setLeaves(data);
     } catch (error) {
       console.error("Error fetching leaves:", error);
@@ -480,6 +484,9 @@ const LeaveList = (): JSX.Element => {
   };
 
   const handleReject = async (leaveId: number): Promise<void> => {
+    // inputValidator keeps the dialog open and explains why, instead of the
+    // previous behaviour of firing a second prompt with no handlers attached,
+    // which silently did nothing when the reason was left blank.
     const { value: comment } = await Swal.fire({
       title: "Reject Leave?",
       input: "textarea",
@@ -489,41 +496,46 @@ const LeaveList = (): JSX.Element => {
       confirmButtonText: "Reject",
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#64748b",
+      inputValidator: (value: string): string | void => {
+        if (!value || !value.trim()) {
+          return "A reason is required so the employee knows why.";
+        }
+
+        if (value.trim().length < 5) {
+          return "Please give a little more detail (at least 5 characters).";
+        }
+
+        return undefined;
+      },
     });
 
-    if (comment && comment.trim()) {
-      setActioningId(leaveId);
-      try {
-        await updateLeave(leaveId, "Rejected", comment);
-        await Swal.fire({
-          title: "Success!",
-          text: MESSAGES.LEAVE_REJECTED,
-          icon: "success",
-          confirmButtonColor: "#2563eb",
-          heightAuto: false,
-        });
-        await fetchLeaves();
-      } catch (error) {
-        console.error("Error rejecting leave:", error);
-        await Swal.fire({
-          title: "Error",
-          text: MESSAGES.ERROR,
-          icon: "error",
-          confirmButtonColor: "#2563eb",
-          heightAuto: false,
-        });
-      } finally {
-        setActioningId(null);
-      }
-    } else if (comment === "") {
+    // Dismissed with no value.
+    if (!comment) {
+      return;
+    }
+
+    setActioningId(leaveId);
+    try {
+      await updateLeave(leaveId, "Rejected", comment.trim());
       await Swal.fire({
-        title: "Reject Leave?",
-        input: "textarea",
-        icon: "warning",
-        showCancelButton: true,
-        backdrop: false,
+        title: "Success!",
+        text: MESSAGES.LEAVE_REJECTED,
+        icon: "success",
+        confirmButtonColor: "#2563eb",
         heightAuto: false,
       });
+      await fetchLeaves();
+    } catch (error) {
+      console.error("Error rejecting leave:", error);
+      await Swal.fire({
+        title: "Error",
+        text: MESSAGES.ERROR,
+        icon: "error",
+        confirmButtonColor: "#2563eb",
+        heightAuto: false,
+      });
+    } finally {
+      setActioningId(null);
     }
   };
 
@@ -897,6 +909,11 @@ const LeaveList = (): JSX.Element => {
                       <div className="leaveName">{leave.EmployeeEmail}</div>
                       <div className="leaveDetails">
                         <span className="leaveType">{leave.LeaveType}</span>
+                        {leave.HalfDayType && leave.HalfDayType !== "None" && (
+                          <span className="halfDayBadge">
+                            {leave.HalfDayType === "FirstHalf" ? "AM" : "PM"}
+                          </span>
+                        )}
                         <span className="separator">•</span>
                         <span className="leaveDates">
                           {getDateRange(leave.StartDate, leave.EndDate)}
@@ -1055,7 +1072,16 @@ const LeaveList = (): JSX.Element => {
                           {leave.EmployeeEmail}
                         </div>
                       </td>
-                      <td>{leave.LeaveType}</td>
+                      <td>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span>{leave.LeaveType}</span>
+                          {leave.HalfDayType && leave.HalfDayType !== "None" && (
+                            <span className="halfDayBadge">
+                              {leave.HalfDayType === "FirstHalf" ? "AM" : "PM"}
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td>{getDateRange(leave.StartDate, leave.EndDate)}</td>
                       <td>
                         <span
@@ -1314,7 +1340,14 @@ const LeaveList = (): JSX.Element => {
                 </div>
                 <div className="detailItem">
                   <span className="detailLabel">Leave Type</span>
-                  <span className="detailValue">{selectedLeave.LeaveType}</span>
+                  <span className="detailValue">
+                    {selectedLeave.LeaveType}
+                    {selectedLeave.HalfDayType && selectedLeave.HalfDayType !== "None" && (
+                      <span className="halfDayBadge" style={{ marginLeft: "6px" }}>
+                        {selectedLeave.HalfDayType === "FirstHalf" ? "AM" : "PM"}
+                      </span>
+                    )}
+                  </span>
                 </div>
                 <div className="detailItem">
                   <span className="detailLabel">Date Range</span>
@@ -1322,6 +1355,11 @@ const LeaveList = (): JSX.Element => {
                     {getDateRange(
                       selectedLeave.StartDate,
                       selectedLeave.EndDate,
+                    )}
+                    {selectedLeave.HalfDayType && selectedLeave.HalfDayType !== "None" && (
+                      <span className="halfDayBadge" style={{ marginLeft: "6px" }}>
+                        {selectedLeave.HalfDayType === "FirstHalf" ? "AM" : "PM"}
+                      </span>
                     )}
                   </span>
                 </div>

@@ -5,17 +5,26 @@ import Login from "../components/auth/Login";
 import Dashboard from "../components/dashboard/Dashboard";
 
 import { AuthProvider } from "../context/AuthContext";
+import { HolidaysProvider } from "../context/HolidaysContext";
 import ProtectedRoute from "./ProtectedRoute";
 
 import EmployeeList from "../components/employee/EmployeeList";
 import ApplyLeave from "../components/leave/ApplyLeave";
 import LeaveList from "../components/leave/LeaveList";
+import MyLeaveHistory from "../components/leave/MyLeaveHistory";
+import HolidayCalendar from "../components/holiday/HolidayCalendar";
+import LeavePolicy from "../components/policy/LeavePolicy";
 
-const AppRouter = (): JSX.Element => {
+interface IAppRouterProps {
+  context: any;
+}
+
+const AppRouter = ({ context }: IAppRouterProps): JSX.Element => {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <Routes>
+    <AuthProvider context={context}>
+      <HolidaysProvider>
+        <HashRouter>
+          <Routes>
           <Route path="/" element={<Login />} />
 
           <Route
@@ -30,7 +39,7 @@ const AppRouter = (): JSX.Element => {
           <Route
             path="/employees"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
                 <EmployeeList />
               </ProtectedRoute>
             }
@@ -46,6 +55,15 @@ const AppRouter = (): JSX.Element => {
           />
 
           <Route
+            path="/my-leave-history"
+            element={
+              <ProtectedRoute>
+                <MyLeaveHistory />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/leave-list"
             element={
               <ProtectedRoute>
@@ -53,8 +71,27 @@ const AppRouter = (): JSX.Element => {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/holiday-calendar"
+            element={
+              <ProtectedRoute>
+                <HolidayCalendar />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/leave-policy"
+            element={
+              <ProtectedRoute>
+                <LeavePolicy />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      </HashRouter>
+        </HashRouter>
+      </HolidaysProvider>
     </AuthProvider>
   );
 };

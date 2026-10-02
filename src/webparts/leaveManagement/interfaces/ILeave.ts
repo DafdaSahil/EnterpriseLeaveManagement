@@ -1,3 +1,5 @@
+export type THalfDayType = "None" | "FirstHalf" | "SecondHalf";
+
 export interface ILeave {
   Id?: number;
   Title?: string;
@@ -10,4 +12,5 @@ export interface ILeave {
   AppliedDate?: Date;
   ApprovedDate?: Date;
   ApproverComments?: string;
+  HalfDayType?: THalfDayType;
 }

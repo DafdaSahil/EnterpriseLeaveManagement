@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layout/MainLayout";
 import { AuthContext } from "../../context/AuthContext";
+import { HolidaysContext } from "../../context/HolidaysContext";
 import {
   getLeaves,
   getLeaveBalance,
@@ -180,6 +181,7 @@ const Dashboard = (): JSX.Element => {
   const navigate = useNavigate();
 
   const { user } = React.useContext(AuthContext);
+  const { holidayDates } = React.useContext(HolidaysContext);
 
   const [leaves, setLeaves] = React.useState<ILeave[]>([]);
 
@@ -206,7 +208,7 @@ const Dashboard = (): JSX.Element => {
         setEmployees(employeeData);
 
         if (user?.Email) {
-          const balance = await getLeaveBalance(user.Email);
+          const balance = await getLeaveBalance(user.Email, holidayDates);
 
           setLeaveBalance(balance);
         }
@@ -218,7 +220,7 @@ const Dashboard = (): JSX.Element => {
     };
 
     fetchData().catch(console.error);
-  }, [user]);
+  }, [user, holidayDates]);
 
   // ── Helpers ──────────────────────────────────────────────
   const getStatValue = (status: string): number => {
@@ -362,7 +364,11 @@ const Dashboard = (): JSX.Element => {
 
             <button
               className="viewAllBtn"
-              onClick={() => navigate("/leave-list")}
+              onClick={() =>
+                navigate(
+                  user?.Role === "Employee" ? "/my-leave-history" : "/leave-list",
+                )
+              }
             >
               View all
             </button>
@@ -407,7 +413,7 @@ const Dashboard = (): JSX.Element => {
 
                 <button
                   className="actionBtn"
-                  onClick={() => navigate("/leave-list")}
+                  onClick={() => navigate("/my-leave-history")}
                 >
                   View my history
                 </button>
@@ -417,26 +423,31 @@ const Dashboard = (): JSX.Element => {
               <div className="leaveBalance">
                 <div className="balanceTitle">Leave balance</div>
 
-                {Object.entries(leaveBalance).map(([type, balance]) => (
-                  <div key={type} className="balanceRow">
-                    <div className="balanceLabel">
-                      <span>{type}</span>
+                {Object.entries(leaveBalance).map(([type, balance]) => {
+                  const formatNumber = (num: number): string =>
+                    num % 1 !== 0 ? num.toFixed(1) : String(num);
 
-                      <span className="balanceCount">
-                        {balance.total - balance.used}/{balance.total}
-                      </span>
-                    </div>
+                  return (
+                    <div key={type} className="balanceRow">
+                      <div className="balanceLabel">
+                        <span>{type}</span>
 
-                    <div className="progressBar">
-                      <div
-                        className="progressFill"
-                        style={{
-                          width: `${((balance.total - balance.used) / balance.total) * 100}%`,
-                        }}
-                      />
+                        <span className="balanceCount">
+                          {formatNumber(balance.total - balance.used)}/{balance.total}
+                        </span>
+                      </div>
+
+                      <div className="progressBar">
+                        <div
+                          className="progressFill"
+                          style={{
+                            width: `${((balance.total - balance.used) / balance.total) * 100}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </>
           ) : (

@@ -1,4 +1,5 @@
 // import { LEAVE_TYPES } from "./constants";
+import { formatDateISO } from "./dateUtils";
 
 // ────────────────────────────────────────────────────────────
 // Email Validation
@@ -21,6 +22,7 @@ export const validateLeaveForm = (formData: {
   startDate?: string;
   endDate?: string;
   reason?: string;
+  halfDayType?: string;
 }): IValidationError[] => {
   const errors: IValidationError[] = [];
 
@@ -67,6 +69,20 @@ export const validateLeaveForm = (formData: {
       errors.push({
         field: "startDate",
         message: "Start date cannot be in the past",
+      });
+    }
+  }
+
+  // Validate half-day type is selected when it's a single day
+  if (formData.startDate && formData.endDate) {
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const isSameDay = formatDateISO(start) === formatDateISO(end);
+
+    if (isSameDay && (!formData.halfDayType || formData.halfDayType === "None")) {
+      errors.push({
+        field: "halfDayType",
+        message: "Please select Full Day, First Half, or Second Half for single-day leave",
       });
     }
   }

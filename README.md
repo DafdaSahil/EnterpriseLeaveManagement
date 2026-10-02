@@ -9,6 +9,9 @@ A modern, enterprise-grade leave management application built with SharePoint Fr
 - **Apply for Leave**: Intuitive form with date picker, leave type selection, and reason
 - **Leave Balance Tracking**: Real-time view of available and used leaves by type
 - **Leave History**: Complete history of all leave applications with status
+- **My Leave History**: Personal leave history page with filters, search, CSV export and a per-request timeline
+- **Holiday Calendar**: Full-year holiday calendar with day highlighting, upcoming holidays and countdown
+- **Leave Policy**: Reference page covering allowances, half-day rules, approvals and cancellation
 - **Dashboard**: Quick overview of leave status and quick action buttons
 - **Validation**: Smart validation with business day calculations
 
@@ -82,6 +85,7 @@ src/webparts/leaveManagement/
    - LeaveType (Single line - Casual/Sick/Earned/Unpaid/Maternity)
    - StartDate (Date)
    - EndDate (Date)
+   - HalfDayType (Single line - None/FirstHalf/SecondHalf)
    - Reason (Multiple lines)
    - Status (Single line - Pending/Approved/Rejected)
    - AppliedDate (Date)
@@ -94,6 +98,18 @@ src/webparts/leaveManagement/
    - Department (Single line)
    - Role (Single line - Admin/Manager/Employee)
    - Manager (Single line - Manager email, optional)
+
+   **Holidays List** (Name: "Holidays")
+   - Title (Single line - holiday name)
+   - Date (Date)
+   - Description (Multiple lines - optional)
+   - HolidayType (Single line - Public/Restricted/Company, optional)
+
+   > The Holidays list powers the Holiday Calendar page and is excluded
+   > automatically when leave days are calculated. If the list is missing (or
+   > empty) the app falls back to the built-in 2026 calendar in
+   > `utils/constants.ts`, so nothing breaks - but the dates will be wrong from
+   > 2027 onwards until the list is created.
 
 3. **Run Development Server**
 
@@ -117,9 +133,28 @@ src/webparts/leaveManagement/
 ### Login
 
 - **Email**: Use your SharePoint email
-- **Password**: Demo password (can be enhanced with actual authentication)
+- **Password**: Legacy demo login only - see the warning below
 - **Role**: Admin, Manager, or Employee
 - Credentials are stored in session storage
+
+> ⚠️ **The password login is not real authentication.** It compares a
+> plaintext password column in the Employees list, and the `Password` column is
+> never returned to the browser when reading employees. Employee records created
+> through the admin form have no password set at all, so they can only sign in
+> via Microsoft login. Treat password login as a development convenience and
+> move everyone to Microsoft login before this goes anywhere real.
+
+### Permissions
+
+| Capability | Employee | Manager | Admin |
+|---|---|---|---|
+| Apply for leave, own history, calendar, policy | Yes | Yes | Yes |
+| Approve / reject team leave requests | No | Yes | Yes |
+| Add, edit and delete employee records | No | **No** | Yes |
+| Add, edit and delete holidays | No | No | Yes |
+
+Employee record management is Admin only - Managers keep their leave-approval
+rights but get no employee record buttons.
 
 ### Employee Workflow
 
@@ -170,6 +205,29 @@ src/webparts/leaveManagement/
 - Status badges with color coding
 - Responsive card layout
 
+### MyLeaveHistory Component
+
+- Personal leave history, scoped to the signed-in employee
+- Summary cards (total, approved, pending, rejected, days taken)
+- Search, status / leave type / year filters and sortable columns
+- Paginated table with a detail modal showing the request timeline
+- CSV export and cancel-pending-request action
+
+### HolidayCalendar Component
+
+- 12-month year grid with holiday days highlighted by type
+- Year selector, "today" jump, and click-to-inspect on any holiday
+- Sidebar with upcoming holidays and a day countdown
+- **Admin-only** add / edit / delete, writing straight to the "Holidays" list
+- Duplicate dates are blocked, since the grid can only show one holiday per day
+- Backed by the "Holidays" SharePoint list, with a built-in fallback calendar
+
+### LeavePolicy Component
+
+- Allowances table generated from `LEAVE_TYPES` in `constants.ts`
+- Guidance on accrual, half days, approvals, cancellation and exceptions
+- Content lives in `utils/leavePolicy.ts` so wording can be edited as data
+
 ### Dashboard Component
 
 - Role-based content (Employee vs Manager)
@@ -187,7 +245,8 @@ Comprehensive service layer for SharePoint operations:
 - `getLeavesByStatus(status)` - Filter by status
 - `addLeave()` - Create leave request
 - `updateLeave()` - Approve/Reject
-- `getLeaveBalance()` - Calculate balance
+- `getLeaveBalance(email, holidayDates?)` - Calculate balance
+- `getHolidays()` - Read the "Holidays" list
 - `calculateBusinessDays()` - Smart day calculation
 
 ## 🔧 Customization
@@ -225,6 +284,50 @@ export const validateLeaveForm = (formData) => {
 };
 ```
 
+### Querying SharePoint Safely
+
+Every value interpolated into a `$filter` string must go through
+`escapeOData()` in `services/SPService.ts`, which doubles single quotes as the
+OData spec requires:
+
+```typescript
+.items.filter(`Email eq '${escapeOData(email)}'`)
+```
+
+Without it, a user-typed value like `' or '1'='1` closes the string literal and
+rewrites the filter. That was exploitable on the login endpoint and returned an
+Admin session to anyone who reached the page.
+
+Two related rules when adding queries:
+
+- **Never `select("*")` on a list that holds sensitive columns.** Employee reads
+  go through the `EMPLOYEE_FIELDS` constant, which excludes `Password`.
+- **Only write fields the calling form actually owns.** `updateEmployee` omits
+  `Password` entirely rather than passing an `undefined` that happens to be
+  dropped by `JSON.stringify` - that behaviour is one refactor away from wiping
+  every employee's password.
+
+### Update Holidays
+
+Admins manage holidays from the **Holiday Calendar** page - "Add Holiday" in
+the toolbar, or select any holiday and use Edit / Delete. Changes are written to
+the "Holidays" SharePoint list, so they apply to everyone at once.
+
+The built-in fallback calendar in `utils/constants.ts` (`COMPANY_HOLIDAYS`) is
+only used when the list is missing or empty. Keep it in step if you deploy
+without creating the list.
+
+> Members without list edit permissions see the "Add Holiday" button greyed out
+> rather than an error - if that happens, check the current user has edit rights
+> on the "Holidays" list, not just read.
+
+### Update Leave Policy
+
+All policy wording is data in
+`src/webparts/leaveManagement/utils/leavePolicy.ts` - edit the `POLICY_SECTIONS`
+array and the page re-renders. The allowance figures are pulled from
+`LEAVE_TYPES`, so changing those in `constants.ts` updates the table too.
+
 ## 📚 Learning Resources
 
 This project demonstrates:
@@ -247,9 +350,11 @@ This project demonstrates:
 
 **SharePoint List Not Found:**
 
-- Ensure lists are created with exact names: "Leaves" and "Employees"
+- Ensure lists are created with exact names: "Leaves", "Employees", "Holidays"
 - Check list column names match expectations
 - Verify user has permissions to lists
+- A missing "Holidays" list is non-fatal - the Holiday Calendar shows a notice
+  and falls back to the built-in default calendar
 
 **Authentication Issues:**
 

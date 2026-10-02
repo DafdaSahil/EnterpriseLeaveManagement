@@ -231,7 +231,9 @@ const EmployeePage = (): JSX.Element => {
     }
   };
 
-  const isAdmin: boolean = user?.Role === "Admin" || user?.Role === "Manager";
+  // Add, edit and delete of employee records is Admin only. Managers keep their
+// leave-approval rights but no longer get the employee record buttons.
+const isAdmin: boolean = user?.Role === "Admin";
   const hasActiveFilters: boolean =
     searchTerm.length > 0 || roleFilter !== "All" || departmentFilter !== "All";
 

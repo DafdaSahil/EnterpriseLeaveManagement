@@ -2,12 +2,13 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { DatePicker, DayOfWeek } from "@fluentui/react";
 import { AuthContext } from "../../context/AuthContext";
+import { HolidaysContext } from "../../context/HolidaysContext";
 import MainLayout from "../../layout/MainLayout";
 import { addLeave, getLeaveBalance } from "../../services/SPService";
-import { COMPANY_HOLIDAYS, LEAVE_TYPES, MESSAGES } from "../../utils/constants";
+import { HALF_DAY_TYPES, LEAVE_TYPES, MESSAGES } from "../../utils/constants";
 import {
   calculateDays,
-  calculateBusinessDays,
+  calculateFractionalDays,
   formatDateISO,
   getMinDate,
 } from "../../utils/dateUtils";
@@ -20,17 +21,20 @@ interface ILeaveForm {
   startDate: string;
   endDate: string;
   reason: string;
+  halfDayType: string;
 }
 
 const ApplyLeave = (): JSX.Element => {
   const navigate = useNavigate();
   const { user } = React.useContext(AuthContext);
+  const { holidays, holidayDates } = React.useContext(HolidaysContext);
 
   const [formData, setFormData] = React.useState<ILeaveForm>({
     leaveType: "",
     startDate: "",
     endDate: "",
     reason: "",
+    halfDayType: "None",
   });
 
   const [errors, setErrors] = React.useState<IValidationError[]>([]);
@@ -45,7 +49,7 @@ const ApplyLeave = (): JSX.Element => {
     const fetchBalance = async (): Promise<void> => {
       if (user?.Email) {
         try {
-          const balance = await getLeaveBalance(user.Email);
+          const balance = await getLeaveBalance(user.Email, holidayDates);
           setLeaveBalance(balance);
         } catch (error) {
           console.error("Error fetching leave balance:", error);
@@ -55,17 +59,17 @@ const ApplyLeave = (): JSX.Element => {
     fetchBalance().catch((error) => {
       console.error("Error loading leave balance:", error);
     });
-  }, [user]);
+  }, [user, holidayDates]);
 
   // Calculate days when dates change
   React.useEffect((): void => {
     if (formData.startDate && formData.endDate) {
-      const days = calculateBusinessDays(formData.startDate, formData.endDate);
+      const days = calculateFractionalDays(formData.startDate, formData.endDate, formData.halfDayType, holidayDates);
       setDaysCount(days);
     } else {
       setDaysCount(0);
     }
-  }, [formData.startDate, formData.endDate]);
+  }, [formData.startDate, formData.endDate, formData.halfDayType, holidayDates]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -79,6 +83,14 @@ const ApplyLeave = (): JSX.Element => {
     }));
     // Clear error for this field
     setErrors((prev) => prev.filter((err) => err.field !== name));
+  };
+
+  const handleHalfDayChange = (value: string): void => {
+    setFormData((prev) => ({
+      ...prev,
+      halfDayType: value,
+    }));
+    setErrors((prev) => prev.filter((err) => err.field !== "halfDayType"));
   };
 
   const handleDateChange = (
@@ -152,6 +164,7 @@ const ApplyLeave = (): JSX.Element => {
         EndDate: new Date(formData.endDate),
         Reason: formData.reason,
         Status: "Pending",
+        HalfDayType: formData.halfDayType as "None" | "FirstHalf" | "SecondHalf",
       });
 
       await Swal.fire({
@@ -193,10 +206,16 @@ const ApplyLeave = (): JSX.Element => {
       ? calculateDays(formData.startDate, formData.endDate)
       : 0;
   const excludedDays = Math.max(0, totalCalendarDays - daysCount);
+
+  // Check if the selected date range is a single day
+  const isSingleDay =
+    formData.startDate &&
+    formData.endDate &&
+    formatDateISO(new Date(formData.startDate)) === formatDateISO(new Date(formData.endDate));
   const holidaysInRange =
     formData.startDate && formData.endDate
-      ? COMPANY_HOLIDAYS.filter((holiday) => {
-          const holidayDate = new Date(holiday.date);
+      ? holidays.filter((holiday) => {
+          const holidayDate = new Date(holiday.isoDate);
           return (
             holidayDate >= new Date(formData.startDate) &&
             holidayDate <= new Date(formData.endDate)
@@ -305,12 +324,39 @@ const ApplyLeave = (): JSX.Element => {
               </div>
             </div>
 
+            {/* Half Day Selector - only shown for single day leave */}
+            {isSingleDay && (
+              <div className="formGroup">
+                <label className="label" htmlFor="halfDayType">
+                  Day Type <span className="required">*</span>
+                </label>
+                <select
+                  id="halfDayType"
+                  name="halfDayType"
+                  value={formData.halfDayType}
+                  onChange={(e) => handleHalfDayChange(e.target.value)}
+                  className={`input ${getFieldError("halfDayType") ? "error" : ""}`}
+                >
+                  {HALF_DAY_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+                {getFieldError("halfDayType") && (
+                  <span className="errorMessage">
+                    {getFieldError("halfDayType")}
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Days Info */}
             {daysCount > 0 && (
               <div className="infoBox">
                 <div className="infoBadge">
                   <span className="infoLabel">Business Days:</span>
-                  <span className="infoBadgeValue">{daysCount}</span>
+                  <span className="infoBadgeValue">{daysCount % 1 !== 0 ? daysCount.toFixed(1) : daysCount}</span>
                 </div>
                 <div className="infoBadge">
                   <span className="infoLabel">Excluded:</span>
@@ -324,7 +370,7 @@ const ApplyLeave = (): JSX.Element => {
                         availableDays < daysCount ? "warning" : "success"
                       }`}
                     >
-                      {availableDays}
+                      {availableDays % 1 !== 0 ? availableDays.toFixed(1) : availableDays}
                     </span>
                   </div>
                 )}
@@ -336,8 +382,8 @@ const ApplyLeave = (): JSX.Element => {
                 <span className="holidayInfoTitle">Company holidays excluded</span>
                 <div className="holidayChips">
                   {holidaysInRange.map((holiday) => (
-                    <span key={holiday.date} className="holidayChip">
-                      {holiday.name} ({holiday.date})
+                    <span key={holiday.isoDate} className="holidayChip">
+                      {holiday.name} ({holiday.isoDate})
                     </span>
                   ))}
                 </div>
@@ -374,13 +420,15 @@ const ApplyLeave = (): JSX.Element => {
                   };
                   const available = leave.daysAllowed - balance.used;
                   const percentage = (available / leave.daysAllowed) * 100;
+                  const formatNumber = (num: number): string =>
+                    num % 1 !== 0 ? num.toFixed(1) : String(num);
 
                   return (
                     <div key={leave.value} className="balanceItem">
                       <div className="balanceItemHeader">
                         <span className="balanceItemLabel">{leave.label}</span>
                         <span className="balanceItemCount">
-                          {available}/{leave.daysAllowed}
+                          {formatNumber(available)}/{leave.daysAllowed}
                         </span>
                       </div>
                       <div className="progressBar">

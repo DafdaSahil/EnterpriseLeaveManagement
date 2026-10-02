@@ -16,6 +16,27 @@ export const menuItems: IMenuItem[] = [
   },
 
   {
+    key: "myLeaveHistory",
+    label: "My Leave History",
+    path: "/my-leave-history",
+    roles: ["Employee"],
+  },
+
+  {
+    key: "holidayCalendar",
+    label: "Holiday Calendar",
+    path: "/holiday-calendar",
+    roles: ["Admin", "Manager", "Employee"],
+  },
+
+  {
+    key: "leavePolicy",
+    label: "Leave Policy",
+    path: "/leave-policy",
+    roles: ["Admin", "Manager", "Employee"],
+  },
+
+  {
     key: "leaveRequests",
     label: "Leave Requests",
     path: "/leave-list",

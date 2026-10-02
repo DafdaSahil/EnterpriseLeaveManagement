@@ -20,6 +20,29 @@ export const formatDateISO = (date: Date | string): string => {
   return `${year}-${month}-${day}`;
 };
 
+/**
+ * Parses a "yyyy-MM-dd" string (with or without a time part) into a Date at
+ * *local* midnight.
+ *
+ * `new Date("2026-01-26")` treats the string as UTC midnight, which lands on
+ * the previous day in any timezone west of Greenwich. That matters here: the
+ * ISO string is what calculateBusinessDays matches holidays against, so a
+ * one-day drift means a holiday silently stops being excluded from leave.
+ */
+export const parseISODate = (value: Date | string): Date => {
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value).trim());
+
+  if (match) {
+    return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  }
+
+  return new Date(value);
+};
+
 export const calculateDays = (start: Date | string, end: Date | string): number => {
   const startDate = new Date(start);
   const endDate = new Date(end);
@@ -92,4 +115,25 @@ export const getDayOfWeek = (date: Date | string): string => {
   const d = new Date(date);
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return days[d.getDay()];
+};
+
+/**
+ * Calculates the number of leave days as a fractional value.
+ * Full days count as 1, half days count as 0.5.
+ * Weekends and company holidays are excluded.
+ */
+export const calculateFractionalDays = (
+  start: Date | string,
+  end: Date | string,
+  halfDayType: string = "None",
+  holidays: string[] = COMPANY_HOLIDAYS.map((holiday) => holiday.date),
+): number => {
+  const businessDays = calculateBusinessDays(start, end, holidays);
+
+  // Only apply half-day logic when it's a single day and a half-day type is selected
+  if (businessDays === 1 && halfDayType !== "None") {
+    return 0.5;
+  }
+
+  return businessDays;
 };
