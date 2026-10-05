@@ -16,9 +16,48 @@
 
 .left {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.menuToggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+  padding: 0;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+.greetingGroup {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
+  min-width: 0;
 }
 
 .greeting {
@@ -27,6 +66,9 @@
   color: #0f172a;
   line-height: 1.2;
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .date {
@@ -34,12 +76,16 @@
   color: #64748b;
   margin: 0;
   font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .right {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .iconBtn {
@@ -89,6 +135,7 @@
   cursor: pointer;
   transition: all var(--transition-base);
   text-decoration: none;
+  white-space: nowrap;
 
   &:hover {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
@@ -121,6 +168,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
+  white-space: nowrap;
 
   &:hover {
     background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
@@ -139,22 +187,90 @@
   }
 }
 
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
+/* Tablet: Show hamburger menu */
+@media (max-width: 1024px) {
+  .menuToggle {
+    display: flex;
+  }
+}
+
 @media (max-width: 768px) {
   .header {
     padding: 0 16px;
-    height: 56px;
+    height: 60px;
+  }
+
+  .left {
+    gap: 10px;
   }
 
   .greeting {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .date {
     font-size: 11px;
   }
 
+  .right {
+    gap: 8px;
+  }
+
+  .settingsBtn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .settingsBtn span {
+    display: none;
+  }
+
+  .settingsBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .logoutBtn {
     padding: 6px 12px;
     font-size: 12px;
+  }
+
+  .logoutBtn span {
+    display: none;
+  }
+
+  .logoutBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .menuToggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .greeting {
+    font-size: 12px;
+  }
+
+  .date {
+    font-size: 10px;
+  }
+
+  .settingsBtn,
+  .logoutBtn {
+    padding: 6px 10px;
+    font-size: 11px;
   }
 }

@@ -70,7 +70,12 @@ const getInitials = (name?: string): string => {
     .toUpperCase();
 };
 
-const Sidebar = (): JSX.Element => {
+interface ISidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Sidebar = ({ isOpen, onClose }: ISidebarProps): JSX.Element => {
   const { user } = React.useContext(AuthContext);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = React.useState<boolean>(false);
@@ -100,13 +105,32 @@ const Sidebar = (): JSX.Element => {
     };
   }, [menuOpen]);
 
+  // Close sidebar on navigation (mobile)
+  React.useEffect((): void => {
+    if (isOpen) {
+      onClose();
+    }
+  }, [navigate]);
+
   const handleUpdateProfile = (): void => {
     setMenuOpen(false);
     navigate("/profile");
   };
 
   return (
-    <nav className="sidebar" aria-label="Main navigation">
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="sidebarOverlay"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+      <nav
+        className={`sidebar ${isOpen ? "open" : ""}`}
+        aria-label="Main navigation"
+      >
       {/* Brand */}
       <div className="logoRow">
         <div className="logoIcon">
@@ -174,6 +198,7 @@ const Sidebar = (): JSX.Element => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 

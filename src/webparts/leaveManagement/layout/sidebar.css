@@ -11,6 +11,8 @@
   height: 100vh;
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  transition: transform 0.3s ease;
 }
 
 .logoRow {
@@ -268,20 +270,42 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
+/* Tablet: Sidebar becomes overlay */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile adjustments */
 @media (max-width: 768px) {
   .sidebar {
-    width: 220px;
-    padding: 0 8px;
+    width: 280px;
+    padding: 0 10px;
   }
 
   .logoRow {
-    margin: 20px 0 16px 0;
+    margin: 24px 0 20px 0;
     gap: 10px;
   }
 
   .logoIcon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
   }
 
   .logoText {
@@ -289,13 +313,46 @@
   }
 
   .menuItem {
-    padding: 9px 10px;
-    font-size: 13px;
-    gap: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    gap: 12px;
   }
 
   .avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .userName {
+    font-size: 12px;
+  }
+
+  .userRole {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 260px;
+    padding: 0 8px;
+  }
+
+  .logoRow {
+    margin: 20px 0 16px 0;
+  }
+
+  .logoIcon {
     width: 36px;
     height: 36px;
+  }
+
+  .menuItem {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+
+  .navLabel {
+    margin: 16px 0 10px 0;
   }
 }

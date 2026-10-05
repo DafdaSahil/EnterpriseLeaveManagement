@@ -4,7 +4,6 @@
 
 .leaveListContainer {
   padding: 32px 20px;
-  /* max-width: 1000px; */
   margin: 0 auto;
 }
 
@@ -253,7 +252,6 @@
 }
 
 .filterDatePicker .ms-TextField-fieldGroup {
-  /* min-height: 38px; */
   border: 1px solid #cbd5e1;
   border-radius: 8px;
 }
@@ -343,6 +341,7 @@
 
 .leaveInfo {
   flex: 1;
+  min-width: 0;
 }
 
 .leaveName {
@@ -446,6 +445,7 @@
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid #e2e8f0;
+  flex-wrap: wrap;
 }
 
 .btnApprove,
@@ -466,6 +466,7 @@
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  min-width: 100px;
 }
 
 .btnView {
@@ -585,6 +586,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  -webkit-overflow-scrolling: touch;
 }
 
 .leaveTable {
@@ -608,6 +610,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.35px;
+  white-space: nowrap;
 }
 
 .leaveTable tr:last-child td {
@@ -738,6 +741,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .leaveModalClose:hover {
@@ -868,7 +872,10 @@
   overflow-wrap: anywhere;
 }
 
-/* Responsive Design */
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .leaveListContainer {
     padding: 20px 16px;
@@ -878,14 +885,20 @@
     font-size: 26px;
   }
 
+  .pageSubtitle {
+    font-size: 14px;
+  }
+
   .filterBar {
     flex-direction: column;
     align-items: stretch;
     padding: 14px 16px;
+    gap: 14px;
   }
 
   .pageHeader {
     flex-direction: column;
+    gap: 14px;
   }
 
   .pageActions {
@@ -902,27 +915,40 @@
     grid-template-columns: 1fr;
     margin-top: -12px;
     padding: 14px 16px;
+    gap: 12px;
   }
 
   .filterGroup {
     flex-direction: column;
     min-width: auto;
+    gap: 10px;
   }
 
   .filterButtons {
     width: 100%;
   }
 
+  .filterBtn {
+    flex: 1;
+    text-align: center;
+  }
+
   .refreshBtn {
     width: 100%;
   }
 
+  .searchBox {
+    flex: 1 1 100%;
+  }
+
   .leaveCardTop {
     flex-direction: column;
+    gap: 10px;
   }
 
   .actionButtons {
     flex-direction: column;
+    gap: 8px;
   }
 
   .btnApprove,
@@ -930,25 +956,132 @@
   .btnView,
   .btnCancelLeave {
     width: 100%;
+    min-width: 0;
   }
 
   .leaveCard {
     padding: 16px;
   }
 
+  .leaveName {
+    font-size: 15px;
+  }
+
+  .leaveDetails {
+    gap: 8px;
+  }
+
   .leaveDetailGrid {
     grid-template-columns: 1fr;
+    padding: 16px 18px 0;
   }
 
   .leaveTimeline {
     grid-template-columns: 1fr;
+    padding: 14px 18px 0;
   }
 
   .leaveModalHeader,
-  .leaveDetailGrid,
-  .leaveTimeline,
   .detailSection {
     padding-left: 18px;
     padding-right: 18px;
+  }
+
+  .leaveModalTitle {
+    font-size: 20px;
+  }
+
+  .emptyState {
+    padding: 40px 16px;
+  }
+
+  .emptyIcon {
+    font-size: 36px;
+  }
+
+  .emptyTitle {
+    font-size: 16px;
+  }
+
+  .emptyText {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaveListContainer {
+    padding: 16px 12px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+  }
+
+  .pageSubtitle {
+    font-size: 13px;
+  }
+
+  .filterBar {
+    padding: 12px;
+  }
+
+  .filterBtn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .leaveCard {
+    padding: 14px;
+  }
+
+  .leaveName {
+    font-size: 14px;
+  }
+
+  .leaveDetails {
+    font-size: 12px;
+  }
+
+  .statusBadge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .leaveReason {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .approvalInfo {
+    font-size: 11px;
+  }
+
+  .leaveModalTitle {
+    font-size: 18px;
+  }
+
+  .leaveModalSubtitle {
+    font-size: 12px;
+  }
+
+  .detailLabel {
+    font-size: 10px;
+  }
+
+  .detailValue {
+    font-size: 13px;
+  }
+
+  .detailNote {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .timelineTitle {
+    font-size: 12px;
+  }
+
+  .timelineMeta {
+    font-size: 11px;
   }
 }

@@ -2,7 +2,7 @@
    Apply Leave Component Styles
    ────────────────────────────────────────────────────────────── */
 
-.applyLeaveContainer {  
+.applyLeaveContainer {
   max-width: 800px;
   margin: 0 auto;
 }
@@ -80,6 +80,8 @@
   background: #ffffff;
   color: #0f172a;
   transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input:focus,
@@ -108,7 +110,6 @@
 }
 
 .datePickerControl .ms-TextField-fieldGroup {
-  /* min-height: 42px; */
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #ffffff;
@@ -155,6 +156,7 @@
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #dbeafe;
+  flex: 1;
 }
 
 .infoLabel {
@@ -330,30 +332,123 @@
   cursor: not-allowed;
 }
 
-/* Responsive Design */
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
-  .formRow {
-    grid-template-columns: 1fr;
+  .applyLeaveContainer {
+    max-width: 100%;
   }
 
-  .formCard {
-    padding: 20px;
+  .pageHeader {
+    margin-bottom: 24px;
   }
 
   .pageTitle {
     font-size: 24px;
   }
 
+  .pageSubtitle {
+    font-size: 14px;
+  }
+
+  .formCard {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .leaveForm {
+    gap: 20px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
   .formButtons {
     flex-direction: column-reverse;
+    gap: 10px;
   }
 
   .btnCancel,
   .btnSubmit {
     width: 100%;
+    padding: 12px 24px;
   }
 
   .infoBox {
     flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .infoBadge {
+    width: 100%;
+  }
+
+  .balanceCard {
+    padding: 16px;
+  }
+
+  .balanceTitle {
+    font-size: 14px;
+  }
+
+  .textarea {
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 20px;
+  }
+
+  .pageSubtitle {
+    font-size: 13px;
+  }
+
+  .formCard {
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .leaveForm {
+    gap: 16px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .input,
+  .textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .btnCancel,
+  .btnSubmit {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .infoLabel {
+    font-size: 12px;
+  }
+
+  .infoBadgeValue {
+    font-size: 15px;
+  }
+
+  .holidayInfoTitle {
+    font-size: 12px;
+  }
+
+  .holidayChip {
+    font-size: 11px;
+    padding: 5px 8px;
   }
 }

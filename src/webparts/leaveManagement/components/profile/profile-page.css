@@ -60,6 +60,7 @@
   justify-content: flex-end;
   padding-top: 8px;
   border-top: 1px solid #f1f5f9;
+  gap: 10px;
 }
 
 .profileLoading {
@@ -74,4 +75,63 @@
 .profileLoading p {
   margin-top: 12px;
   font-size: 14px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .profileCard .panelHeader {
+    padding: 16px 20px;
+  }
+
+  .profileBody {
+    padding: 20px;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .formActions button {
+    width: 100%;
+  }
+
+  .checkboxLabel {
+    font-size: 13px;
+  }
+
+  .hintText {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileGrid {
+    gap: 12px;
+  }
+
+  .profileCard .panelHeader {
+    padding: 14px 16px;
+  }
+
+  .profileBody {
+    padding: 16px;
+  }
+
+  .checkboxLabel {
+    font-size: 12px;
+  }
+
+  .checkboxLabel input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+  }
 }

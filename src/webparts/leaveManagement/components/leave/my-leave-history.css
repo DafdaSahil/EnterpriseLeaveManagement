@@ -323,6 +323,7 @@
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   animation: historySlideInUp 0.5s ease;
+  -webkit-overflow-scrolling: touch;
 }
 
 .historyTable {
@@ -401,8 +402,6 @@
 
 .historyStatusBadge {
   display: inline-flex;
-  /* Keeps the badge hugging its text when it sits inside a flex-column
-     parent (.historyDetailItem), which would otherwise stretch it. */
   width: fit-content;
   align-self: flex-start;
   padding: 5px 9px;
@@ -630,6 +629,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .historyModalClose:hover {
@@ -790,7 +790,10 @@
   cursor: not-allowed;
 }
 
-/* Responsive Design */
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
 @media (max-width: 900px) {
   .historyStats {
     grid-template-columns: repeat(2, 1fr);
@@ -812,6 +815,10 @@
     font-size: 26px;
   }
 
+  .historySubtitle {
+    font-size: 14px;
+  }
+
   .historyActions {
     justify-content: flex-start;
     width: 100%;
@@ -822,9 +829,24 @@
     gap: 12px;
   }
 
+  .historyStatCard {
+    padding: 18px;
+  }
+
+  .historyStatIcon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .historyStatValue {
+    font-size: 26px;
+  }
+
   .historyFilterBar {
     padding: 16px;
     gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .historySearchBox,
@@ -832,6 +854,7 @@
   .historyFilterSelect {
     width: 100%;
     min-width: 0;
+    flex: 1 1 100%;
   }
 
   .historyFilterButtons {
@@ -840,6 +863,7 @@
 
   .historyFilterBtn {
     flex: 1 1 auto;
+    text-align: center;
   }
 
   .historyTimeline,
@@ -849,5 +873,118 @@
 
   .historyPagination {
     justify-content: center;
+    padding: 12px;
+  }
+
+  .historyModalTitle {
+    font-size: 20px;
+  }
+
+  .historyModalSubtitle {
+    font-size: 12px;
+  }
+
+  .historyModalHeader {
+    padding: 18px 20px;
+  }
+
+  .historyModalBody {
+    padding: 16px 20px 20px;
+  }
+
+  .historyModalFooter {
+    padding: 14px 20px;
+  }
+
+  .historyEmpty {
+    padding: 40px 16px;
+  }
+
+  .historyEmptyIcon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .historyEmptyTitle {
+    font-size: 16px;
+  }
+
+  .historyEmptyText {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historyPage {
+    padding: 16px 12px;
+  }
+
+  .historyTitle {
+    font-size: 22px;
+  }
+
+  .historySubtitle {
+    font-size: 13px;
+  }
+
+  .historyStatCard {
+    padding: 16px;
+  }
+
+  .historyStatIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .historyStatValue {
+    font-size: 24px;
+  }
+
+  .historyStatLabel {
+    font-size: 12px;
+  }
+
+  .historyFilterBar {
+    padding: 14px;
+  }
+
+  .historyFilterBtn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .historySearchInput {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .historyModalTitle {
+    font-size: 18px;
+  }
+
+  .historyDetailLabel {
+    font-size: 10px;
+  }
+
+  .historyDetailValue {
+    font-size: 13px;
+  }
+
+  .historyDetailNote {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .historyTimelineTitle {
+    font-size: 12px;
+  }
+
+  .historyTimelineMeta {
+    font-size: 11px;
+  }
+
+  .historyModalCancelBtn {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 }

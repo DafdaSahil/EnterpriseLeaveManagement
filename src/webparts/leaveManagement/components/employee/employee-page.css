@@ -100,14 +100,6 @@
   letter-spacing: 0.6px;
 }
 
-/* Slight responsive tweak */
-@media (max-width: 480px) {
-  .kpiValue { font-size: 18px; }
-  .kpiIcon { width: 40px; height: 40px; font-size: 16px; }
-  .kpiGrid { gap: 10px; }
-}
-
-
 /* ──────────────────────────────────────────────────────────────
    PANEL
    ────────────────────────────────────────────────────────────── */
@@ -289,6 +281,7 @@
 
 .tableWrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .employeeTable {
@@ -310,6 +303,7 @@
   text-transform: uppercase;
   font-size: 11px;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .employeeTable tbody tr {
@@ -333,7 +327,8 @@
 
 .actionsCell {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -536,6 +531,8 @@
   transition: all 0.2s ease;
   color: #0f172a;
   background: white;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formInput:focus {
@@ -570,6 +567,7 @@
   padding: 20px;
   border-top: 1px solid #e2e8f0;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -585,23 +583,58 @@
     font-size: 24px;
   }
 
+  .pageSubtitle {
+    font-size: 13px;
+  }
+
   .kpiGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 24px;
+  }
+
+  .kpiCard {
+    padding: 14px;
+  }
+
+  .kpiIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .kpiValue {
+    font-size: 20px;
+  }
+
+  .kpiLabel {
+    font-size: 11px;
+  }
+
+  .panel {
+    padding: 18px;
   }
 
   .panelHeader {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .panelTitle {
+    font-size: 16px;
   }
 
   .filterSection {
     gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .searchBox {
     min-width: 100%;
+    max-width: 100%;
   }
 
   .filters {
@@ -611,6 +644,8 @@
   .filterSelect {
     flex: 1;
     min-width: 120px;
+    font-size: 12px;
+    padding: 8px 10px;
   }
 
   .employeeTable {
@@ -624,6 +659,7 @@
 
   .actionsCell {
     flex-direction: column;
+    gap: 6px;
   }
 
   .btnSmall {
@@ -634,6 +670,45 @@
 
   .modal {
     max-width: 95%;
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 16px;
+  }
+
+  .modalTitle {
+    font-size: 16px;
+  }
+
+  .modalForm {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .modalFooter {
+    padding: 16px;
+    flex-direction: column-reverse;
+  }
+
+  .modalFooter button {
+    width: 100%;
+  }
+
+  .emptyState {
+    padding: 40px 16px;
+  }
+
+  .emptyIcon {
+    font-size: 36px;
+  }
+
+  .emptyTitle {
+    font-size: 15px;
+  }
+
+  .emptyDescription {
+    font-size: 12px;
   }
 }
 
@@ -642,13 +717,49 @@
     font-size: 20px;
   }
 
-  .panelHeader {
-    gap: 12px;
+  .pageSubtitle {
+    font-size: 12px;
   }
 
-  .btnPrimary {
-    padding: 8px 12px;
-    font-size: 12px;
+  .kpiGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .kpiCard {
+    padding: 12px;
+  }
+
+  .kpiIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .kpiValue {
+    font-size: 18px;
+  }
+
+  .kpiLabel {
+    font-size: 10px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .panelTitle {
+    font-size: 15px;
+  }
+
+  .filterSelect {
+    font-size: 11px;
+    padding: 8px;
+  }
+
+  .employeeTable th,
+  .employeeTable td {
+    padding: 8px 10px;
   }
 
   .employeeTable th:nth-child(n + 5),
@@ -656,18 +767,94 @@
     display: none;
   }
 
-  .filterSelect {
+  .nameCell {
+    width: auto;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .statusBadge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .modalTitle {
+    font-size: 15px;
+  }
+
+  .formInput {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .formLabel {
     font-size: 12px;
-    padding: 8px 10px;
+  }
+
+  .errorText {
+    font-size: 11px;
   }
 }
 
-.actionsCell {
+/* Pagination */
+.pagination {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 16px;
+  flex-wrap: wrap;
 }
 
+.paginationBtn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.paginationBtn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.paginationInfo {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Mobile pagination */
+@media (max-width: 768px) {
+  .pagination {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .paginationBtn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .paginationInfo {
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+}
+
+/* Icon buttons */
 .iconBtn {
   width: 36px;
   height: 36px;
@@ -708,36 +895,4 @@
 .iconBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-.pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-}
-
-.paginationBtn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.paginationBtn:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.paginationBtn:disabled {
-  background: #cbd5e1;
-  cursor: not-allowed;
-}
-
-.paginationInfo {
-  font-size: 14px;
-  font-weight: 500;
 }

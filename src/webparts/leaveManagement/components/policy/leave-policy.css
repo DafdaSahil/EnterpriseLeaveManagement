@@ -239,6 +239,7 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .policyTable {
@@ -336,10 +337,14 @@
   line-height: 1.65;
 }
 
-/* Responsive Design */
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .policyPage {
     padding: 20px 16px;
+    max-width: 100%;
   }
 
   .policyHeader {
@@ -352,6 +357,10 @@
     font-size: 26px;
   }
 
+  .policySubtitle {
+    font-size: 14px;
+  }
+
   .policyActions {
     width: 100%;
     justify-content: flex-start;
@@ -362,11 +371,123 @@
     gap: 12px;
   }
 
+  .policyHighlight {
+    padding: 16px;
+  }
+
+  .policyHighlightIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .policyHighlightValue {
+    font-size: 18px;
+  }
+
   .policySection {
     padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .policySectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .policySectionTitle {
+    font-size: 16px;
+  }
+
+  .policySectionSummary {
+    font-size: 13px;
+  }
+
+  .policyListItem {
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .policyListIcon {
+    width: 18px;
+    height: 18px;
   }
 
   .policyFooterCard {
     padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .policyFooterIcon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .policyFooterText {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .policyPage {
+    padding: 16px 12px;
+  }
+
+  .policyTitle {
+    font-size: 22px;
+  }
+
+  .policySubtitle {
+    font-size: 13px;
+  }
+
+  .policyHighlight {
+    padding: 14px;
+  }
+
+  .policyHighlightValue {
+    font-size: 16px;
+  }
+
+  .policyHighlightLabel {
+    font-size: 11px;
+  }
+
+  .policySection {
+    padding: 16px;
+  }
+
+  .policySectionTitle {
+    font-size: 15px;
+  }
+
+  .policySectionMeta {
+    font-size: 11px;
+  }
+
+  .policyListItem {
+    font-size: 12px;
+  }
+
+  .policyTable th,
+  .policyTable td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .policyTableType {
+    font-size: 13px;
+  }
+
+  .policyTableDays,
+  .policyTableOnDemand {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .policyTableNote {
+    font-size: 12px;
   }
 }

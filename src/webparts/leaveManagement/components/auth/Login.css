@@ -384,7 +384,7 @@
   height: 44px;
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 0 44px 0 136px;
+  padding: 0 44px 0 44px;
   font-family: inherit;
   font-size: 14px;
   color: #1e293b;
@@ -516,6 +516,8 @@
 }
 
 /* ── Responsive ────────────────────────────────────────── */
+
+/* Tablet and below: Hide branding, center form */
 @media (max-width: 900px) {
   .loginBranding {
     display: none;
@@ -523,12 +525,24 @@
 
   .loginContent {
     max-width: 440px;
+    justify-content: center;
+  }
+
+  .loginFormSection {
+    padding: 40px 24px;
   }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
   .loginPage {
     padding: 16px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .loginContent {
+    min-height: auto;
   }
 
   .loginFormSection {
@@ -542,5 +556,146 @@
 
   .cardTitle {
     font-size: 22px;
+  }
+
+  .cardSubtitle {
+    font-size: 12px;
+  }
+
+  .microsoftBtn {
+    height: 44px;
+    font-size: 13px;
+  }
+
+  .input {
+    height: 42px;
+    font-size: 14px;
+    padding: 0 40px 0 40px;
+  }
+
+  .submitBtn {
+    height: 44px;
+    font-size: 13px;
+  }
+
+  .fieldGroup {
+    margin-bottom: 16px;
+  }
+
+  .divider {
+    margin-bottom: 18px;
+  }
+
+  .forgotRow {
+    margin-bottom: 18px;
+  }
+
+  .footerNote {
+    font-size: 10px;
+    margin-top: 16px;
+  }
+
+  /* Hide decorative orbs on small screens for performance */
+  .orb {
+    filter: blur(60px);
+    opacity: 0.3;
+  }
+
+  .orb1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -80px;
+  }
+
+  .orb2 {
+    width: 250px;
+    height: 250px;
+    bottom: -80px;
+    left: -60px;
+  }
+
+  .orb3,
+  .orb4 {
+    display: none;
+  }
+}
+
+/* Very small devices */
+@media (max-width: 360px) {
+  .loginPage {
+    padding: 12px;
+    padding-top: 24px;
+  }
+
+  .loginCard {
+    padding: 24px 16px;
+    border-radius: 16px;
+  }
+
+  .cardTitle {
+    font-size: 20px;
+  }
+
+  .microsoftBtn {
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .input {
+    font-size: 13px;
+  }
+
+  .submitBtn {
+    font-size: 12px;
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .loginPage {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .loginCard {
+    padding: 20px 24px;
+  }
+
+  .cardHeader {
+    margin-bottom: 16px;
+  }
+
+  .cardTitle {
+    font-size: 20px;
+  }
+
+  .fieldGroup {
+    margin-bottom: 12px;
+  }
+
+  .input {
+    height: 38px;
+  }
+
+  .microsoftBtn {
+    height: 38px;
+    margin-bottom: 12px;
+  }
+
+  .submitBtn {
+    height: 38px;
+  }
+
+  .divider {
+    margin-bottom: 14px;
+  }
+
+  .forgotRow {
+    margin-bottom: 14px;
+  }
+
+  .footerNote {
+    margin-top: 12px;
   }
 }

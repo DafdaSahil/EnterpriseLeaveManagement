@@ -597,6 +597,7 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 16px 24px 22px 24px;
+  flex-wrap: wrap;
 }
 
 /* ── Form ─────────────────────────────────────────────────── */
@@ -748,6 +749,329 @@
   color: #64748b;
 }
 
+/* ── View Toggle ──────────────────────────────────────────── */
+
+.holidayViewToggle {
+  display: inline-flex;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.holidayViewBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  background: #ffffff;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.holidayViewBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.holidayViewBtn.active {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: #ffffff;
+}
+
+.holidayViewBtn + .holidayViewBtn {
+  border-left: 1px solid #cbd5e1;
+}
+
+/* ── Month Navigation ─────────────────────────────────────── */
+
+.holidayMonthNav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.holidayMonthNavBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.holidayMonthNavBtn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.holidayMonthNavLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 0 8px;
+  white-space: nowrap;
+  min-width: 120px;
+  text-align: center;
+}
+
+/* ── Large Month View ─────────────────────────────────────── */
+
+.holidayLargeMonth {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  animation: holidaySlideInUp 0.4s ease;
+}
+
+.holidayLargeMonthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.holidayLargeMonthName {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.holidayLargeMonthCount {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.holidayLargeWeekHead {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.holidayLargeWeekLabel {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 0;
+}
+
+.holidayLargeDays {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.holidayLargeWeek {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.holidayLargeDay {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  border: 1px solid transparent;
+  font-family: inherit;
+  padding: 4px;
+  min-height: 60px;
+  transition: all 0.15s ease;
+}
+
+.holidayLargeDay.empty {
+  background: transparent;
+}
+
+.holidayLargeDay.weekend:not(.hasHoliday) {
+  color: #cbd5e1;
+}
+
+.holidayLargeDay.hasHoliday {
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.holidayLargeDay.hasHoliday:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+  z-index: 1;
+}
+
+.holidayLargeDay.hasHoliday.public {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.holidayLargeDay.hasHoliday.restricted {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.holidayLargeDay.hasHoliday.company {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.holidayLargeDay.isToday {
+  box-shadow: inset 0 0 0 2px #0f172a;
+}
+
+.holidayLargeDay.isSelected {
+  box-shadow: inset 0 0 0 2px #0f172a, 0 0 0 3px rgba(15, 23, 42, 0.2);
+}
+
+.holidayLargeDayNumber {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.holidayLargeDayName {
+  font-size: 9px;
+  font-weight: 600;
+  margin-top: 2px;
+  opacity: 0.9;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Month holiday list */
+.holidayLargeMonthList {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.holidayLargeMonthListTitle {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.holidayLargeMonthListItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.holidayLargeMonthListItem:hover {
+  border-color: #93c5fd;
+  transform: translateX(2px);
+}
+
+.holidayLargeMonthListItem.isSelected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.holidayLargeMonthListItemDate {
+  width: 48px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+.holidayLargeMonthListItem.public .holidayLargeMonthListItemDate {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.holidayLargeMonthListItem.restricted .holidayLargeMonthListItemDate {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.holidayLargeMonthListItem.company .holidayLargeMonthListItemDate {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.holidayLargeMonthListItemDay {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.holidayLargeMonthListItemMonth {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+}
+
+.holidayLargeMonthListItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.holidayLargeMonthListItemName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.holidayLargeMonthListItemMeta {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+
 /* Legend */
 .holidayLegend {
   display: flex;
@@ -774,7 +1098,10 @@
   flex: 0 0 auto;
 }
 
-/* Responsive Design */
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE STYLES
+   ────────────────────────────────────────────────────────────── */
+
 @media (max-width: 1200px) {
   .holidayLayout {
     grid-template-columns: 1fr;
@@ -807,6 +1134,10 @@
     font-size: 26px;
   }
 
+  .holidaySubtitle {
+    font-size: 14px;
+  }
+
   .holidayActions {
     width: 100%;
     justify-content: flex-start;
@@ -814,13 +1145,212 @@
 
   .holidaySummary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .holidaySummaryCard {
+    padding: 14px 16px;
+  }
+
+  .holidaySummaryValue {
+    font-size: 22px;
   }
 
   .holidayGrid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .holidayMonth {
+    padding: 12px;
   }
 
   .holidaySide {
     grid-template-columns: 1fr;
+  }
+
+  .holidayModalHeader {
+    padding: 18px 20px 14px 20px;
+  }
+
+  .holidayModalTitle {
+    font-size: 17px;
+  }
+
+  .holidayModalSubtitle {
+    font-size: 12px;
+  }
+
+  .holidayModalBody {
+    padding: 16px 20px 20px 20px;
+  }
+
+  .holidayModalFooter {
+    padding: 14px 20px 18px 20px;
+  }
+
+  .holidayModalFooter .holidayBtn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .holidaySelectedName {
+    font-size: 16px;
+  }
+
+  .holidaySelectedDate {
+    font-size: 12px;
+  }
+
+  .holidaySelectedDescription {
+    font-size: 12px;
+  }
+
+  .holidayUpcomingDate {
+    width: 38px;
+  }
+
+  .holidayUpcomingDay {
+    font-size: 14px;
+  }
+
+  .holidayUpcomingName {
+    font-size: 12px;
+  }
+
+  .holidayUpcomingMeta {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .holidayPage {
+    padding: 16px 12px;
+  }
+
+  .holidayTitle {
+    font-size: 22px;
+  }
+
+  .holidaySubtitle {
+    font-size: 13px;
+  }
+
+  .holidaySummary {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .holidaySummaryCard {
+    padding: 12px 14px;
+  }
+
+  .holidaySummaryValue {
+    font-size: 20px;
+  }
+
+  .holidaySummaryLabel {
+    font-size: 11px;
+  }
+
+  .holidayMonthName {
+    font-size: 12px;
+  }
+
+  .holidayDay {
+    font-size: 10px;
+    border-radius: 4px;
+  }
+
+  .holidayWeekLabel {
+    font-size: 9px;
+  }
+
+  .holidayModalTitle {
+    font-size: 16px;
+  }
+
+  .holidayTextarea {
+    font-size: 14px;
+  }
+
+  .holidayConfirmText {
+    font-size: 13px;
+  }
+
+  .holidayConfirmWarn {
+    font-size: 12px;
+  }
+
+  /* Month view responsive */
+  .holidayViewToggle {
+    width: 100%;
+  }
+
+  .holidayViewBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .holidayMonthNav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .holidayMonthNavLabel {
+    min-width: 100px;
+    font-size: 12px;
+  }
+
+  .holidayLargeMonth {
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .holidayLargeMonthName {
+    font-size: 18px;
+  }
+
+  .holidayLargeMonthCount {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .holidayLargeDay {
+    min-height: 48px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+
+  .holidayLargeDayNumber {
+    font-size: 14px;
+  }
+
+  .holidayLargeDayName {
+    font-size: 8px;
+  }
+
+  .holidayLargeWeekLabel {
+    font-size: 10px;
+    padding: 6px 0;
+  }
+
+  .holidayLargeMonthListItemDate {
+    width: 42px;
+    padding: 6px 0;
+  }
+
+  .holidayLargeMonthListItemDay {
+    font-size: 16px;
+  }
+
+  .holidayLargeMonthListItemName {
+    font-size: 13px;
+  }
+
+  .holidayLargeMonthListItemMeta {
+    font-size: 11px;
   }
 }

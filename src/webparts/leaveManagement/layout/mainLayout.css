@@ -20,8 +20,33 @@
   overflow-y: auto;
 }
 
+/* Mobile overlay for sidebar */
+.sidebarOverlay {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .pageContent {
     padding: 20px 16px;
+  }
+
+  .sidebarOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 998;
+    animation: overlayFadeIn 0.2s ease;
+  }
+
+  @keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContent {
+    padding: 16px 12px;
   }
 }

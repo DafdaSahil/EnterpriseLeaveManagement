@@ -481,6 +481,161 @@ const MiniMonth = ({
   );
 };
 
+// ── Large Month View ─────────────────────────────────────────
+interface ILargeMonthViewProps {
+  year: number;
+  month: number;
+  holidayMap: Map<string, INormalizedHoliday>;
+  todayIso: string;
+  selectedIso: string;
+  onSelect: (holiday: INormalizedHoliday) => void;
+}
+
+const LargeMonthView = ({
+  year,
+  month,
+  holidayMap,
+  todayIso,
+  selectedIso,
+  onSelect,
+}: ILargeMonthViewProps): JSX.Element => {
+  const blanks = getLeadingBlanks(year, month);
+  const total = daysInMonth(year, month);
+  const cells: (number | null)[] = [
+    ...Array(blanks).fill(null),
+    ...Array.from({ length: total }, (_, i) => i + 1),
+  ];
+
+  while (cells.length % 7 !== 0) {
+    cells.push(null);
+  }
+
+  const weeks: (number | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    weeks.push(cells.slice(i, i + 7));
+  }
+
+  const monthHolidays = Array.from(holidayMap.values())
+    .filter((h) => {
+      const d = h.date;
+      return d.getFullYear() === year && d.getMonth() === month;
+    })
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  return (
+    <div className="holidayLargeMonth">
+      <div className="holidayLargeMonthHeader">
+        <h3 className="holidayLargeMonthName">
+          {MONTH_NAMES[month]} {year}
+        </h3>
+        <span className="holidayLargeMonthCount">
+          {monthHolidays.length} {monthHolidays.length === 1 ? "holiday" : "holidays"}
+        </span>
+      </div>
+
+      <div className="holidayLargeWeekHead" aria-hidden="true">
+        {WEEKDAYS.map((day) => (
+          <span key={day} className="holidayLargeWeekLabel">
+            {day}
+          </span>
+        ))}
+      </div>
+
+      <div className="holidayLargeDays">
+        {weeks.map((week, weekIndex) => (
+          <div className="holidayLargeWeek" key={`w-${weekIndex}`}>
+            {week.map((day, dayIndex) => {
+              if (day === null) {
+                return (
+                  <span
+                    key={`b-${dayIndex}`}
+                    className="holidayLargeDay empty"
+                  />
+                );
+              }
+
+              const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+                day,
+              ).padStart(2, "0")}`;
+              const holiday = holidayMap.get(iso);
+              const isWeekend = [0, 6].indexOf(
+                new Date(year, month, day).getDay(),
+              ) > -1;
+
+              const classNames = [
+                "holidayLargeDay",
+                isWeekend && !holiday ? "weekend" : "",
+                holiday ? `hasHoliday ${holiday.type.toLowerCase()}` : "",
+                iso === todayIso ? "isToday" : "",
+                holiday && holiday.isoDate === selectedIso ? "isSelected" : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+
+              if (!holiday) {
+                return (
+                  <span key={iso} className={classNames}>
+                    {day}
+                  </span>
+                );
+              }
+
+              return (
+                <button
+                  key={iso}
+                  type="button"
+                  className={classNames}
+                  onClick={() => onSelect(holiday)}
+                  title={`${holiday.name} - ${formatDate(holiday.date)}`}
+                  aria-label={`${holiday.name}, ${formatDate(holiday.date)}`}
+                >
+                  <span className="holidayLargeDayNumber">{day}</span>
+                  <span className="holidayLargeDayName">{holiday.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {monthHolidays.length > 0 && (
+        <div className="holidayLargeMonthList">
+          <h4 className="holidayLargeMonthListTitle">
+            Holidays in {MONTH_NAMES[month]}
+          </h4>
+          {monthHolidays.map((holiday) => (
+            <button
+              key={holiday.id}
+              type="button"
+              className={`holidayLargeMonthListItem ${holiday.type.toLowerCase()} ${
+                holiday.isoDate === selectedIso ? "isSelected" : ""
+              }`}
+              onClick={() => onSelect(holiday)}
+            >
+              <div className="holidayLargeMonthListItemDate">
+                <span className="holidayLargeMonthListItemDay">
+                  {holiday.date.getDate()}
+                </span>
+                <span className="holidayLargeMonthListItemMonth">
+                  {MONTH_NAMES[holiday.date.getMonth()].slice(0, 3)}
+                </span>
+              </div>
+              <div className="holidayLargeMonthListItemInfo">
+                <span className="holidayLargeMonthListItemName">
+                  {holiday.name}
+                </span>
+                <span className="holidayLargeMonthListItemMeta">
+                  {getDayOfWeek(holiday.date)}, {formatDate(holiday.date)}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ── Page ─────────────────────────────────────────────────────
 const HolidayCalendar = (): JSX.Element => {
   const {
@@ -501,6 +656,12 @@ const HolidayCalendar = (): JSX.Element => {
     new Date().getFullYear(),
   );
   const [selectedIso, setSelectedIso] = React.useState<string>("");
+
+  // View mode: "year" shows all 12 months, "month" shows one large month
+  const [viewMode, setViewMode] = React.useState<"year" | "month">("year");
+  const [selectedMonth, setSelectedMonth] = React.useState<number>(
+    new Date().getMonth(),
+  );
 
   // Modal state: "create" opens a blank form, an INormalizedHoliday opens that
   // one for editing, and deleting is a two-step confirmation.
@@ -671,6 +832,44 @@ const HolidayCalendar = (): JSX.Element => {
           </div>
 
           <div className="holidayActions">
+            <div className="holidayViewToggle">
+              <button
+                className={`holidayViewBtn ${viewMode === "year" ? "active" : ""}`}
+                type="button"
+                onClick={() => setViewMode("year")}
+                aria-label="Year view"
+                title="Year view"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span>Year</span>
+              </button>
+              <button
+                className={`holidayViewBtn ${viewMode === "month" ? "active" : ""}`}
+                type="button"
+                onClick={() => setViewMode("month")}
+                aria-label="Month view"
+                title="Month view"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                  <line x1="8" y1="14" x2="8" y2="14" />
+                  <line x1="12" y1="14" x2="12" y2="14" />
+                  <line x1="16" y1="14" x2="16" y2="14" />
+                  <line x1="8" y1="18" x2="8" y2="18" />
+                  <line x1="12" y1="18" x2="12" y2="18" />
+                </svg>
+                <span>Month</span>
+              </button>
+            </div>
+
             <select
               className="holidayYearSelect"
               value={selectedYear}
@@ -683,6 +882,48 @@ const HolidayCalendar = (): JSX.Element => {
                 </option>
               ))}
             </select>
+
+            {viewMode === "month" && (
+              <div className="holidayMonthNav">
+                <button
+                  className="holidayMonthNavBtn"
+                  type="button"
+                  onClick={() => {
+                    if (selectedMonth === 0) {
+                      setSelectedMonth(11);
+                      setSelectedYear((prev) => prev - 1);
+                    } else {
+                      setSelectedMonth((prev) => prev - 1);
+                    }
+                  }}
+                  aria-label="Previous month"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <span className="holidayMonthNavLabel">
+                  {MONTH_NAMES[selectedMonth]} {selectedYear}
+                </span>
+                <button
+                  className="holidayMonthNavBtn"
+                  type="button"
+                  onClick={() => {
+                    if (selectedMonth === 11) {
+                      setSelectedMonth(0);
+                      setSelectedYear((prev) => prev + 1);
+                    } else {
+                      setSelectedMonth((prev) => prev + 1);
+                    }
+                  }}
+                  aria-label="Next month"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+            )}
 
             <button
               className="holidayBtn"
@@ -702,6 +943,7 @@ const HolidayCalendar = (): JSX.Element => {
               type="button"
               onClick={() => {
                 setSelectedYear(new Date().getFullYear());
+                setSelectedMonth(new Date().getMonth());
                 setSelectedIso("");
               }}
             >
@@ -769,27 +1011,41 @@ const HolidayCalendar = (): JSX.Element => {
 
         <div className="holidayLayout">
           {/* Year grid */}
-          <div className="holidayGrid">
-            {MONTH_NAMES.map((name, index) => (
-              <div
-                key={name}
-                className={
-                  index === currentMonth && selectedYear === new Date().getFullYear()
-                    ? "holidayMonth current"
-                    : "holidayMonthWrap"
-                }
-              >
-                <MiniMonth
-                  year={selectedYear}
-                  month={index}
-                  holidayMap={holidayMap}
-                  todayIso={todayIso}
-                  selectedIso={selectedIso}
-                  onSelect={(holiday) => setSelectedIso(holiday.isoDate)}
-                />
-              </div>
-            ))}
-          </div>
+          {viewMode === "year" && (
+            <div className="holidayGrid">
+              {MONTH_NAMES.map((name, index) => (
+                <div
+                  key={name}
+                  className={
+                    index === currentMonth && selectedYear === new Date().getFullYear()
+                      ? "holidayMonth current"
+                      : "holidayMonthWrap"
+                  }
+                >
+                  <MiniMonth
+                    year={selectedYear}
+                    month={index}
+                    holidayMap={holidayMap}
+                    todayIso={todayIso}
+                    selectedIso={selectedIso}
+                    onSelect={(holiday) => setSelectedIso(holiday.isoDate)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Month view */}
+          {viewMode === "month" && (
+            <LargeMonthView
+              year={selectedYear}
+              month={selectedMonth}
+              holidayMap={holidayMap}
+              todayIso={todayIso}
+              selectedIso={selectedIso}
+              onSelect={(holiday) => setSelectedIso(holiday.isoDate)}
+            />
+          )}
 
           {/* Sidebar */}
           <aside className="holidaySide">
