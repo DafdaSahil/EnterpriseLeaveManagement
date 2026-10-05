@@ -2,6 +2,7 @@ import * as React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { menuItems } from "../utils/menuData";
+import UserAvatar from "../components/common/UserAvatar";
 import "./sidebar.css";
 
 const ThreeDotsIcon = (): JSX.Element => (
@@ -58,17 +59,6 @@ const BrandIcon = (): JSX.Element => (
     />
   </svg>
 );
-
-/** Returns initials from a display name, e.g. "Arjun Kumar" → "AK" */
-const getInitials = (name?: string): string => {
-  if (!name) return "U";
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-};
 
 interface ISidebarProps {
   isOpen: boolean;
@@ -165,9 +155,12 @@ const Sidebar = ({ isOpen, onClose }: ISidebarProps): JSX.Element => {
       {/* Footer / user block */}
       <div className="sidebarFooter">
         <div className="userBlock" ref={menuRef}>
-          <div className="avatar" aria-hidden="true">
-            {getInitials(user?.DisplayName || user?.Email)}
-          </div>
+          <UserAvatar
+            name={user?.DisplayName}
+            email={user?.Email}
+            imageUrl={user?.EmployeeImage}
+            size={40}
+          />
           <div className="userInfo">
             <span className="userName">
               {user?.DisplayName || user?.Email || "User"}

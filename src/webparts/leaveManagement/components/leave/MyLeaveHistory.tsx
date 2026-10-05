@@ -7,6 +7,7 @@ import { ILeave } from "../../interfaces/ILeave";
 import { LEAVE_TYPES, MESSAGES, STATUS_COLORS } from "../../utils/constants";
 import {
   calculateFractionalDays,
+  findOverlappingLeaves,
   formatDate,
   formatDateISO,
   getDateRange,
@@ -453,6 +454,27 @@ const MyLeaveHistory = (): JSX.Element => {
   const getStatusColor = (status: TStatus): string =>
     STATUS_COLORS[status] || "#64748b";
 
+  // Check if a leave overlaps with any other leave by the same employee
+  const getOverlapInfo = (
+    leave: ILeave,
+  ): { hasOverlap: boolean; overlappingWith: ILeave[] } => {
+    const overlapping = findOverlappingLeaves(
+      leaves,
+      leave.StartDate,
+      leave.EndDate,
+      {
+        excludeId: leave.Id,
+        employeeEmail: email,
+        statuses: ["Pending", "Approved"],
+      },
+    ) as ILeave[];
+
+    return {
+      hasOverlap: overlapping.length > 0,
+      overlappingWith: overlapping,
+    };
+  };
+
   // ? Render ?
   return (
     <MainLayout>
@@ -693,7 +715,28 @@ const MyLeaveHistory = (): JSX.Element => {
                         </span>
                       )}
                     </td>
-                    <td>{getDateRange(leave.StartDate, leave.EndDate)}</td>
+                    <td>
+                      <div className="historyDateCell">
+                        <span>{getDateRange(leave.StartDate, leave.EndDate)}</span>
+                        {(() => {
+                          const overlapInfo = getOverlapInfo(leave);
+                          if (!overlapInfo.hasOverlap) return null;
+                          return (
+                            <span
+                              className="historyOverlapBadge"
+                              title={`Overlaps with: ${overlapInfo.overlappingWith.map((ol) => `${ol.LeaveType} (${ol.Status}): ${formatDate(ol.StartDate)} - ${formatDate(ol.EndDate)}`).join('; ')}`}
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                              </svg>
+                              Overlap
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    </td>
                     <td className="historyDuration">
                       {getDurationLabel(leave, holidayDates)}
                     </td>
@@ -928,6 +971,36 @@ const MyLeaveHistory = (): JSX.Element => {
                     </span>
                   </div>
                 </div>
+
+                {(() => {
+                  const overlapInfo = getOverlapInfo(selectedLeave);
+                  if (!overlapInfo.hasOverlap) return null;
+                  return (
+                    <div className="historyDetailSection">
+                      <span className="historyDetailLabel">Leave Overlap</span>
+                      <div className="historyOverlapWarning">
+                        <div className="historyOverlapWarningHeader">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                          </svg>
+                          <span>Overlaps with {overlapInfo.overlappingWith.length} other leave(s)</span>
+                        </div>
+                        <div className="historyOverlapWarningList">
+                          {overlapInfo.overlappingWith.map((ol) => (
+                            <div key={ol.Id} className="historyOverlapWarningItem">
+                              <span className="historyOverlapWarningType">{ol.LeaveType}</span>
+                              <span className="historyOverlapWarningDates">
+                                {ol.Status}: {formatDate(ol.StartDate)} - {formatDate(ol.EndDate)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div className="historyDetailSection">
                   <span className="historyDetailLabel">Reason</span>

@@ -5,14 +5,19 @@ import { AuthContext } from "../../context/AuthContext";
 import {
   changePassword,
   getEmployeeByEmail,
+  removeEmployeePhoto,
   updateOwnProfile,
+  uploadEmployeePhoto,
 } from "../../services/SPService";
 import { IEmployee } from "../../interfaces/IEmployee";
 import { DEPARTMENTS } from "../../utils/constants";
+import UserAvatar from "../common/UserAvatar";
 import "./profile-page.css";
 
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
+
 const ProfilePage = (): JSX.Element => {
-  const { user } = React.useContext(AuthContext);
+  const { user, updateUser } = React.useContext(AuthContext);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [saving, setSaving] = React.useState<boolean>(false);
@@ -22,6 +27,12 @@ const ProfilePage = (): JSX.Element => {
   const [department, setDepartment] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
   const [role, setRole] = React.useState<string>("");
+
+  // Photo fields
+  const [photoUrl, setPhotoUrl] = React.useState<string>("");
+  const [photoSaving, setPhotoSaving] = React.useState<boolean>(false);
+  const [photoError, setPhotoError] = React.useState<string>("");
+  const photoInputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Password fields
   const [currentPassword, setCurrentPassword] = React.useState<string>("");
@@ -44,6 +55,7 @@ const ProfilePage = (): JSX.Element => {
         setDepartment(employee.Department || "");
         setEmail(employee.Email || "");
         setRole(employee.Role || "");
+        setPhotoUrl(employee.EmployeeImage || "");
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -128,6 +140,56 @@ const ProfilePage = (): JSX.Element => {
         delete next[name];
         return next;
       });
+    }
+  };
+
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = event.target.files?.[0];
+
+    // Reset so the same file can be picked again.
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+    }
+
+    if (!file || !user?.Id) return;
+
+    if (file.size > MAX_PHOTO_SIZE_BYTES) {
+      setPhotoError("Photo must be smaller than 5 MB.");
+      return;
+    }
+
+    setPhotoError("");
+    setPhotoSaving(true);
+    try {
+      const url = await uploadEmployeePhoto(user.Id, file);
+      setPhotoUrl(url);
+      updateUser({ EmployeeImage: url });
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      setPhotoError(
+        error instanceof Error ? error.message : "Failed to upload photo.",
+      );
+    } finally {
+      setPhotoSaving(false);
+    }
+  };
+
+  const handleRemovePhoto = async (): Promise<void> => {
+    if (!user?.Id) return;
+
+    setPhotoSaving(true);
+    setPhotoError("");
+    try {
+      await removeEmployeePhoto(user.Id);
+      setPhotoUrl("");
+      updateUser({ EmployeeImage: undefined });
+    } catch (error) {
+      console.error("Error removing photo:", error);
+      setPhotoError("Failed to remove photo.");
+    } finally {
+      setPhotoSaving(false);
     }
   };
 
@@ -228,6 +290,46 @@ const ProfilePage = (): JSX.Element => {
           </div>
 
           <div className="profileBody">
+            <div className="photoSection">
+              <UserAvatar
+                name={name}
+                email={email}
+                imageUrl={photoUrl}
+                size={96}
+                className="profilePhoto"
+              />
+              <div className="photoControls">
+                <input
+                  ref={photoInputRef}
+                  id="profilePhotoInput"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="photoInput"
+                  onChange={handlePhotoChange}
+                  disabled={photoSaving}
+                />
+                <label htmlFor="profilePhotoInput" className="btnSecondary">
+                  {photoSaving ? "Saving..." : "Change photo"}
+                </label>
+                {photoUrl && (
+                  <button
+                    type="button"
+                    className="btnGhost"
+                    onClick={handleRemovePhoto}
+                    disabled={photoSaving}
+                  >
+                    Remove
+                  </button>
+                )}
+                <span className="hintText">
+                  JPG, PNG or WebP, max 5 MB
+                </span>
+                {photoError && (
+                  <span className="errorText">{photoError}</span>
+                )}
+              </div>
+            </div>
+
             <div className="formGroup">
               <label htmlFor="profileName" className="formLabel">
                 Full Name *

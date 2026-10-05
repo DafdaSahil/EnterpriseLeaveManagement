@@ -1,0 +1,11 @@
+/* Shared avatar: initials block or employee photo.
+   Base gradient/typography comes from the layout stylesheet;
+   this file only handles the photo itself. */
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+}

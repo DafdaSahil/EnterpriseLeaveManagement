@@ -31,6 +31,18 @@ export const AuthProvider = ({
     setUser(userData);
   };
 
+  const updateUser = (changes: Partial<IUser>): void => {
+    setUser((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const updated = { ...current, ...changes };
+      sessionStorage.setItem("user", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const loginWithMicrosoft = async (): Promise<boolean> => {
     try {
       setIsLoading(true);
@@ -78,6 +90,7 @@ export const AuthProvider = ({
 
         IsActive: employee.IsActive,
         LoginType: "microsoft",
+        EmployeeImage: employee.EmployeeImage,
       };
 
       sessionStorage.setItem("user", JSON.stringify(userData));
@@ -104,6 +117,7 @@ export const AuthProvider = ({
         isLoading,
         error,
         login,
+        updateUser,
         loginWithMicrosoft,
         logout,
       }}

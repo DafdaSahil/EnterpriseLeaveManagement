@@ -2,11 +2,19 @@ import * as React from "react";
 import { IEmployee } from "../../interfaces/IEmployee";
 import { IEmployeeRow } from "./employeeTypes";
 import { DEPARTMENTS } from "../../utils/constants";
+import UserAvatar from "../common/UserAvatar";
+
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
+const PHOTO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 interface IEmployeeFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (employee: IEmployee) => Promise<void>;
+  onSubmit: (
+    employee: IEmployee,
+    photoFile?: File,
+    photoRemoved?: boolean,
+  ) => Promise<void>;
   isLoading: boolean;
   editingEmployee?: IEmployeeRow;
   employees: IEmployeeRow[];
@@ -33,6 +41,27 @@ const EmployeeForm = ({
   const [formData, setFormData] = React.useState<IEmployee>(emptyEmployee);
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
 
+  // Photo selection. The file is kept out of formData because
+  // it is uploaded separately, after the employee record exists.
+  const [photoFile, setPhotoFile] = React.useState<File | undefined>(
+    undefined,
+  );
+  const [photoPreview, setPhotoPreview] = React.useState<string>("");
+  const [photoRemoved, setPhotoRemoved] = React.useState<boolean>(false);
+  const [photoError, setPhotoError] = React.useState<string>("");
+  const photoInputRef = React.useRef<HTMLInputElement | null>(null);
+  const objectUrlRef = React.useRef<string | undefined>(undefined);
+
+  // Release object URLs created for previews.
+  React.useEffect((): (() => void) => {
+    return () => {
+      if (objectUrlRef.current !== undefined) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = undefined;
+      }
+    };
+  }, []);
+
   React.useEffect((): void => {
     if (editingEmployee !== undefined) {
       setFormData({
@@ -44,10 +73,20 @@ const EmployeeForm = ({
         Role: editingEmployee.Role,
         Manager: editingEmployee.Manager || "",
       });
+      setPhotoPreview(editingEmployee.EmployeeImage || "");
     } else {
       setFormData(emptyEmployee);
+      setPhotoPreview("");
     }
 
+    // Reset any photo picked in a previous open of the form.
+    if (objectUrlRef.current !== undefined) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = undefined;
+    }
+    setPhotoFile(undefined);
+    setPhotoRemoved(false);
+    setPhotoError("");
     setErrors({});
   }, [editingEmployee, isOpen]);
 
@@ -107,11 +146,63 @@ const EmployeeForm = ({
     }
   };
 
+  const handlePhotoChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    const file = event.target.files?.[0];
+
+    // Reset so the same file can be picked again.
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+    }
+
+    if (!file) {
+      return;
+    }
+
+    if (PHOTO_MIME_TYPES.indexOf(file.type) === -1) {
+      setPhotoError("Only JPG, PNG or WebP images are supported.");
+      return;
+    }
+
+    if (file.size > MAX_PHOTO_SIZE_BYTES) {
+      setPhotoError("Photo must be smaller than 5 MB.");
+      return;
+    }
+
+    if (objectUrlRef.current !== undefined) {
+      URL.revokeObjectURL(objectUrlRef.current);
+    }
+
+    const preview = URL.createObjectURL(file);
+    objectUrlRef.current = preview;
+    setPhotoFile(file);
+    setPhotoPreview(preview);
+    setPhotoRemoved(false);
+    setPhotoError("");
+  };
+
+  const handlePhotoRemove = (): void => {
+    if (objectUrlRef.current !== undefined) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = undefined;
+    }
+
+    setPhotoFile(undefined);
+    setPhotoPreview("");
+    // Only meaningful for an existing employee that has a photo on record.
+    setPhotoRemoved(
+      editingEmployee !== undefined &&
+        Boolean(editingEmployee.EmployeeImage),
+    );
+    setPhotoError("");
+  };
+
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
 
     if (validateForm()) {
-      await onSubmit(formData);
+      await onSubmit(formData, photoFile, photoRemoved);
       onClose();
     }
   };
@@ -140,6 +231,47 @@ const EmployeeForm = ({
         </div>
 
         <form onSubmit={handleSubmit} className="modalForm">
+          <div className="formGroup photoFormGroup">
+            <span className="formLabel">Photo</span>
+            <div className="photoPickerRow">
+              <UserAvatar
+                name={formData.Name}
+                email={formData.Email}
+                imageUrl={photoPreview}
+                size={64}
+                className="formPhoto"
+              />
+              <div className="photoPickerActions">
+                <input
+                  ref={photoInputRef}
+                  id="employeePhotoInput"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="photoInput"
+                  onChange={handlePhotoChange}
+                  disabled={isLoading}
+                />
+                <label htmlFor="employeePhotoInput" className="btnSecondary">
+                  Change photo
+                </label>
+                {(photoPreview || editingEmployee?.EmployeeImage) && (
+                  <button
+                    type="button"
+                    className="btnGhost"
+                    onClick={handlePhotoRemove}
+                    disabled={isLoading}
+                  >
+                    Remove
+                  </button>
+                )}
+                <span className="hintText">JPG, PNG or WebP, max 5 MB</span>
+                {photoError && (
+                  <span className="errorText">{photoError}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="formGroup">
             <label htmlFor="Name" className="formLabel">
               Name *

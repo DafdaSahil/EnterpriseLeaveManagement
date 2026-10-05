@@ -9,4 +9,10 @@ export interface IUser {
 
   IsActive?: boolean;
   LoginType?: "microsoft" | "local";
+  /**
+   * Server-relative URL of the employee's photo in the
+   * "EmployeePhotos" document library, stored in the Employees
+   * list's EmployeeImage column.
+   */
+  EmployeeImage?: string;
 }

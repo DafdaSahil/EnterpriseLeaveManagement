@@ -98,6 +98,12 @@ src/webparts/leaveManagement/
    - Department (Single line)
    - Role (Single line - Admin/Manager/Employee)
    - Manager (Single line - Manager email, optional)
+   - EmployeeImage (Single line - optional, profile photo URL; see "Employee Photos" below)
+
+   **Employee Photos Library** (Document library, Name: "EmployeePhotos")
+   - Holds profile photos uploaded from the My Profile page
+   - The app uploads `photo_<employeeId>.<ext>` files here and stores the file's server-relative URL in the Employees list's `EmployeeImage` column
+   - Users need **Contribute** permission on this library to upload their own photo; without it the upload fails with a permission error on the Profile page
 
    **Holidays List** (Name: "Holidays")
    - Title (Single line - holiday name)
@@ -248,6 +254,18 @@ Comprehensive service layer for SharePoint operations:
 - `getLeaveBalance(email, holidayDates?)` - Calculate balance
 - `getHolidays()` - Read the "Holidays" list
 - `calculateBusinessDays()` - Smart day calculation
+- `uploadEmployeePhoto(employeeId, file)` - Upload a profile photo to the "EmployeePhotos" library and store its URL on the employee record
+- `removeEmployeePhoto(employeeId)` - Clear the photo reference
+
+### Profile Photos
+
+- Employees upload a photo (JPG, PNG or WebP, max 5 MB) from **My Profile**
+- Admins can also set or replace any employee's photo from the employee form (Edit Employee) and see photos in the employee list
+- Photos are stored in the "EmployeePhotos" document library as `photo_<employeeId>.<ext>`, so re-uploading replaces the old photo
+- Each upload stores a versioned URL (`?v=<timestamp>`) so browsers fetch the new photo instead of serving the cached one
+- The photo URL lives in the Employees list's `EmployeeImage` column and is shown in the sidebar, header, profile page and employee list
+- If a photo is missing or fails to load, an initials avatar is shown automatically
+- Requires **Contribute** rights on the "EmployeePhotos" library for the signed-in user
 
 ## 🔧 Customization
 

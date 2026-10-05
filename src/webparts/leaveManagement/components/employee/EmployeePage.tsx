@@ -5,12 +5,16 @@ import { AuthContext } from "../../context/AuthContext";
 import {
   addEmployee,
   deleteEmployee,
+  getEmployeeByEmail,
   getEmployees,
+  removeEmployeePhoto,
   updateEmployee,
+  uploadEmployeePhoto,
 } from "../../services/SPService";
 import { IEmployee } from "../../interfaces/IEmployee";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeKpiCard from "./EmployeeKpiCard";
+import UserAvatar from "../common/UserAvatar";
 import {
   CheckCircleIcon,
   DeleteIcon,
@@ -140,12 +144,19 @@ const EmployeePage = (): JSX.Element => {
     (employee) => employee.IsActive !== false,
   ).length;
 
-  const handleSaveEmployee = async (employee: IEmployee): Promise<void> => {
+  const handleSaveEmployee = async (
+    employee: IEmployee,
+    photoFile?: File,
+    photoRemoved?: boolean,
+  ): Promise<void> => {
     setActioningId(-1);
 
     try {
+      let employeeId: number | undefined;
+
       if (editingEmployee !== undefined) {
         await updateEmployee(editingEmployee.Id, employee);
+        employeeId = editingEmployee.Id;
         await Swal.fire({
           title: "Success!",
           text: "Employee updated successfully",
@@ -155,6 +166,11 @@ const EmployeePage = (): JSX.Element => {
         });
       } else {
         await addEmployee(employee);
+        // The add response shape varies between PnP versions,
+        // so look the record back up to get its id for the
+        // photo upload.
+        const created = await getEmployeeByEmail(employee.Email);
+        employeeId = created?.Id;
         await Swal.fire({
           title: "Success!",
           text: "Employee added successfully",
@@ -162,6 +178,27 @@ const EmployeePage = (): JSX.Element => {
           confirmButtonColor: "#2563eb",
           heightAuto: false,
         });
+      }
+
+      // Photos are handled after the record is saved so a
+      // photo failure never rolls back the employee change.
+      if (employeeId !== undefined) {
+        try {
+          if (photoFile !== undefined) {
+            await uploadEmployeePhoto(employeeId, photoFile);
+          } else if (photoRemoved) {
+            await removeEmployeePhoto(employeeId);
+          }
+        } catch (photoError) {
+          console.error("Error saving employee photo:", photoError);
+          await Swal.fire({
+            title: "Warning",
+            text: "Employee saved, but the photo could not be updated. Check that you have Contribute access to the EmployeePhotos library.",
+            icon: "warning",
+            confirmButtonColor: "#2563eb",
+            heightAuto: false,
+          });
+        }
       }
 
       setEditingEmployee(undefined);
@@ -350,7 +387,13 @@ const isAdmin: boolean = user?.Role === "Admin";
                 {currentEmployees.map((employee) => (
                   <tr key={employee.Id}>
                     <td className="nameCell">
-                      {employee.Title || employee.Name || "-"}
+                      <UserAvatar
+                        name={employee.Title || employee.Name}
+                        email={employee.Email}
+                        imageUrl={employee.EmployeeImage}
+                        size={32}
+                      />
+                      <span>{employee.Title || employee.Name || "-"}</span>
                     </td>
                     <td>{employee.Email}</td>
                     <td>{employee.Department || "-"}</td>

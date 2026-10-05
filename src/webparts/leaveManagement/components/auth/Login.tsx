@@ -65,6 +65,7 @@ const Login = (): JSX.Element => {
         Department: employee.Department,
         IsActive: employee.IsActive,
         LoginType: "local",
+        EmployeeImage: employee.EmployeeImage,
       };
 
       login(userData);

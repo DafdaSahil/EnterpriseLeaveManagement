@@ -15,4 +15,5 @@ export interface IEmployee {
   Manager?: string;
   IsActive?: boolean;
   Created?: string;
+  EmployeeImage?: string;
 }

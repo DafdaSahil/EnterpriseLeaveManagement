@@ -4,11 +4,13 @@ import { DatePicker, DayOfWeek } from "@fluentui/react";
 import { AuthContext } from "../../context/AuthContext";
 import { HolidaysContext } from "../../context/HolidaysContext";
 import MainLayout from "../../layout/MainLayout";
-import { addLeave, getLeaveBalance } from "../../services/SPService";
+import { addLeave, getLeaveBalance, getLeavesByEmployee } from "../../services/SPService";
 import { HALF_DAY_TYPES, LEAVE_TYPES, MESSAGES } from "../../utils/constants";
 import {
   calculateDays,
   calculateFractionalDays,
+  findOverlappingLeaves,
+  formatDate,
   formatDateISO,
   getMinDate,
 } from "../../utils/dateUtils";
@@ -152,6 +154,54 @@ const ApplyLeave = (): JSX.Element => {
         });
         return;
       }
+    }
+
+    // Check for overlapping leaves
+    try {
+      const existingLeaves = await getLeavesByEmployee(user?.Email || "");
+      const overlapping = findOverlappingLeaves(
+        existingLeaves,
+        formData.startDate,
+        formData.endDate,
+        {
+          employeeEmail: user?.Email || "",
+          statuses: ["Pending", "Approved"],
+        },
+      );
+
+      if (overlapping.length > 0) {
+        const overlapDetails = overlapping
+          .map(
+            (l) =>
+              `• ${l.LeaveType} (${l.Status}): ${formatDate(l.StartDate)} - ${formatDate(l.EndDate)}`,
+          )
+          .join("\n");
+
+        const { isConfirmed } = await Swal.fire({
+          title: "Leave Overlap Detected",
+          html: `<div style="text-align:left;">
+            <p style="margin-bottom:10px;">Your requested leave dates overlap with existing leave(s):</p>
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;color:#7c2d12;">
+              ${overlapDetails.replace(/\n/g, "<br/>")}
+            </div>
+            <p style="font-size:13px;color:#64748b;">Do you still want to submit this request?</p>
+          </div>`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Submit Anyway",
+          cancelButtonText: "Go Back",
+          confirmButtonColor: "#2563eb",
+          cancelButtonColor: "#64748b",
+          heightAuto: false,
+        });
+
+        if (!isConfirmed) {
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Error checking for overlapping leaves:", error);
+      // Continue with submission even if overlap check fails
     }
 
     setLoading(true);

@@ -10,7 +10,7 @@ import {
   updateLeave,
 } from "../../services/SPService";
 import { LEAVE_TYPES, STATUS_COLORS, MESSAGES } from "../../utils/constants";
-import { formatDate, formatDateISO, getDateRange } from "../../utils/dateUtils";
+import { findOverlappingLeaves, formatDate, formatDateISO, getDateRange } from "../../utils/dateUtils";
 import Swal from "sweetalert2";
 import { jsPDF } from "jspdf";
 import "./leave-list.css";
@@ -624,6 +624,24 @@ const LeaveList = (): JSX.Element => {
     return leave.Status === "Approved" ? "Approved" : "Rejected";
   };
 
+  // Check if a leave overlaps with any other employee's leave
+  const getOverlapInfo = (leave: ILeave): { hasOverlap: boolean; overlappingWith: ILeave[] } => {
+    const overlapping = findOverlappingLeaves(
+      leaves,
+      leave.StartDate,
+      leave.EndDate,
+      {
+        excludeId: leave.Id,
+        statuses: ["Pending", "Approved"],
+      },
+    ).filter((l) => l.EmployeeEmail !== leave.EmployeeEmail) as ILeave[];
+
+    return {
+      hasOverlap: overlapping.length > 0,
+      overlappingWith: overlapping,
+    };
+  };
+
   return (
     <MainLayout>
       <div className="leaveListContainer">
@@ -939,6 +957,33 @@ const LeaveList = (): JSX.Element => {
                     </div>
                   )}
 
+                  {(() => {
+                    const overlapInfo = getOverlapInfo(leave);
+                    if (!overlapInfo.hasOverlap) return null;
+                    return (
+                      <div className="overlapWarning">
+                        <div className="overlapWarningHeader">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                          </svg>
+                          <span>Overlapping with {overlapInfo.overlappingWith.length} other leave(s)</span>
+                        </div>
+                        <div className="overlapWarningList">
+                          {overlapInfo.overlappingWith.map((ol) => (
+                            <div key={ol.Id} className="overlapWarningItem">
+                              <span className="overlapWarningEmployee">{getEmployeeName(ol.EmployeeEmail)}</span>
+                              <span className="overlapWarningDates">
+                                {ol.LeaveType} ({ol.Status}): {formatDate(ol.StartDate)} - {formatDate(ol.EndDate)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   <div className="actionButtons">
                     <button
                       className="btnView"
@@ -1082,18 +1127,24 @@ const LeaveList = (): JSX.Element => {
                           )}
                         </div>
                       </td>
-                      <td>{getDateRange(leave.StartDate, leave.EndDate)}</td>
                       <td>
-                        <span
-                          className="tableStatus"
-                          style={{
-                            backgroundColor: getStatusColor(
-                              leave.Status as TStatus,
-                            ),
-                          }}
-                        >
-                          {leave.Status}
-                        </span>
+                        <div className="tableDateCell">
+                          <span>{getDateRange(leave.StartDate, leave.EndDate)}</span>
+                          {(() => {
+                            const overlapInfo = getOverlapInfo(leave);
+                            if (!overlapInfo.hasOverlap) return null;
+                            return (
+                              <span className="tableOverlapBadge" title={`Overlaps with: ${overlapInfo.overlappingWith.map((ol) => `${getEmployeeName(ol.EmployeeEmail)} (${ol.LeaveType} ${ol.Status}: ${formatDate(ol.StartDate)} - ${formatDate(ol.EndDate)})`).join('; ')}`}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                  <line x1="12" y1="9" x2="12" y2="13" />
+                                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                                Overlap
+                              </span>
+                            );
+                          })()}
+                        </div>
                       </td>
                       <td className="tableReason">{leave.Reason || "-"}</td>
                       <td>
@@ -1380,6 +1431,36 @@ const LeaveList = (): JSX.Element => {
                   </span>
                 </div>
               </div>
+
+              {(() => {
+                const overlapInfo = getOverlapInfo(selectedLeave);
+                if (!overlapInfo.hasOverlap) return null;
+                return (
+                  <div className="detailSection">
+                    <span className="detailLabel">Leave Overlap</span>
+                    <div className="overlapWarning" style={{ marginTop: "8px" }}>
+                      <div className="overlapWarningHeader">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                          <line x1="12" y1="9" x2="12" y2="13" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                        <span>Overlapping with {overlapInfo.overlappingWith.length} other leave(s)</span>
+                      </div>
+                      <div className="overlapWarningList">
+                        {overlapInfo.overlappingWith.map((ol) => (
+                          <div key={ol.Id} className="overlapWarningItem">
+                            <span className="overlapWarningEmployee">{getEmployeeName(ol.EmployeeEmail)}</span>
+                            <span className="overlapWarningDates">
+                              {ol.LeaveType} ({ol.Status}): {formatDate(ol.StartDate)} - {formatDate(ol.EndDate)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div className="detailSection">
                 <span className="detailLabel">Employee Reason</span>

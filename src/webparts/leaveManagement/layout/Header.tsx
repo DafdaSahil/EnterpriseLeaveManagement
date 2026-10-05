@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import UserAvatar from "../components/common/UserAvatar";
 import "./header.css";
 
 const SITE_CONTENT_URL = "/sites/LMS/_layouts/15/settings.aspx";
@@ -63,10 +64,18 @@ const Header = ({ onMenuToggle }: IHeaderProps): JSX.Element => {
           </svg>
         </button>
         <div className="greetingGroup">
-          <span className="greeting">
-            {getGreeting()}, {displayName}
-          </span>
-          <span className="date">{formatDate()}</span>
+          <UserAvatar
+            name={user?.DisplayName}
+            email={user?.Email}
+            imageUrl={user?.EmployeeImage}
+            size={36}
+          />
+          <div className="greetingTextGroup">
+            <span className="greeting">
+              {getGreeting()}, {displayName}
+            </span>
+            <span className="date">{formatDate()}</span>
+          </div>
         </div>
       </div>
 

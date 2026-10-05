@@ -323,12 +323,52 @@
 .nameCell {
   font-weight: 500;
   width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .actionsCell {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   EMPLOYEE FORM PHOTO PICKER
+   ────────────────────────────────────────────────────────────── */
+
+.photoFormGroup {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.photoPickerRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.photoPickerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.photoPickerActions .hintText {
+  width: 100%;
+  margin-top: 0;
+}
+
+.photoPickerActions .errorText {
+  width: 100%;
+}
+
+.formPhoto {
+  border-radius: 12px;
 }
 
 /* ──────────────────────────────────────────────────────────────

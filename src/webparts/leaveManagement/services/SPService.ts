@@ -35,7 +35,7 @@ const escapeOData = (value: string | undefined): string =>
  * where anyone could read it from DevTools.
  */
 const EMPLOYEE_FIELDS =
-  "Id, Title, Name, Email, Department, Role, Manager, IsActive, Created";
+  "Id, Title, Name, Email, Department, Role, Manager, IsActive, Created, EmployeeImage";
 
 // ────────────────────────────────────────────────────────────
 // LEAVE OPERATIONS
@@ -469,6 +469,81 @@ export const updateOwnProfile = async (
     console.error("Error updating profile:", error);
     throw error;
   }
+};
+
+// ────────────────────────────────────────────────────────────
+// PROFILE PHOTO OPERATIONS
+// ────────────────────────────────────────────────────────────
+
+const EMPLOYEE_PHOTOS_LIBRARY = "EmployeePhotos";
+
+const PHOTO_MIME_TYPES: { [mime: string]: string } = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Uploads a new profile photo for an employee into the
+ * "EmployeePhotos" document library and stores the file's
+ * server-relative URL in the Employees list's EmployeeImage
+ * column. Re-uploading overwrites the previous photo because
+ * the file name is derived from the employee id.
+ *
+ * Returns the server-relative URL of the uploaded photo.
+ */
+export const uploadEmployeePhoto = async (
+  employeeId: number,
+  file: File,
+): Promise<string> => {
+  const extension = PHOTO_MIME_TYPES[file.type];
+
+  if (!extension) {
+    throw new Error("Only JPG, PNG or WebP images are supported.");
+  }
+
+  if (file.size > MAX_PHOTO_SIZE_BYTES) {
+    throw new Error("Photo must be smaller than 5 MB.");
+  }
+
+  const sp = getSP();
+
+  // Resolve the web's server-relative URL so the library path
+  // works on any site, not just /sites/LMS.
+  const web = await sp.web.select("ServerRelativeUrl")();
+  const folderUrl = `${web.ServerRelativeUrl}/${EMPLOYEE_PHOTOS_LIBRARY}`;
+  const fileName = `photo_${employeeId}.${extension}`;
+
+  const uploaded = await sp.web
+    .getFolderByServerRelativePath(folderUrl)
+    .files.addUsingPath(fileName, file, { Overwrite: true });
+
+  // The file name is stable (re-uploads overwrite it), so the
+  // URL never changes and browsers would keep serving the
+  // previously cached image. A version parameter on every upload
+  // gives the photo a fresh URL and busts the cache.
+  const photoUrl = `${uploaded.ServerRelativeUrl}?v=${Date.now()}`;
+
+  await sp.web.lists
+    .getByTitle("Employees")
+    .items.getById(employeeId)
+    .update({ EmployeeImage: photoUrl });
+
+  return photoUrl;
+};
+
+/**
+ * Clears the photo reference on the employee record. The file in
+ * the library is left in place so other copies keep working.
+ */
+export const removeEmployeePhoto = async (employeeId: number): Promise<void> => {
+  const sp = getSP();
+  await sp.web.lists
+    .getByTitle("Employees")
+    .items.getById(employeeId)
+    .update({ EmployeeImage: "" });
 };
 
 /**

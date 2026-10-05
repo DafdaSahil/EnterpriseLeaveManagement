@@ -137,3 +137,88 @@ export const calculateFractionalDays = (
 
   return businessDays;
 };
+
+/**
+ * Checks if two date ranges overlap.
+ * Returns true if there is any overlap between the two ranges.
+ */
+export const doDateRangesOverlap = (
+  start1: Date | string,
+  end1: Date | string,
+  start2: Date | string,
+  end2: Date | string,
+): boolean => {
+  const s1 = new Date(start1);
+  const e1 = new Date(end1);
+  const s2 = new Date(start2);
+  const e2 = new Date(end2);
+
+  // Normalize to midnight for accurate comparison
+  s1.setHours(0, 0, 0, 0);
+  e1.setHours(0, 0, 0, 0);
+  s2.setHours(0, 0, 0, 0);
+  e2.setHours(0, 0, 0, 0);
+
+  return s1 <= e2 && s2 <= e1;
+};
+
+/**
+ * Finds all leaves that overlap with the given date range.
+ * Optionally filters by employee email and/or status.
+ */
+export const findOverlappingLeaves = (
+  leaves: Array<{
+    Id?: number;
+    EmployeeEmail: string;
+    StartDate: Date | string;
+    EndDate: Date | string;
+    Status: string;
+    LeaveType?: string;
+    Reason?: string;
+  }>,
+  startDate: Date | string,
+  endDate: Date | string,
+  options?: {
+    excludeId?: number;
+    employeeEmail?: string;
+    statuses?: string[];
+  },
+): Array<{
+  Id?: number;
+  EmployeeEmail: string;
+  StartDate: Date | string;
+  EndDate: Date | string;
+  Status: string;
+  LeaveType?: string;
+  Reason?: string;
+}> => {
+  const {
+    excludeId,
+    employeeEmail,
+    statuses = ["Pending", "Approved"],
+  } = options || {};
+
+  return leaves.filter((leave) => {
+    // Skip the leave being edited
+    if (excludeId !== undefined && leave.Id === excludeId) {
+      return false;
+    }
+
+    // Filter by employee if specified
+    if (employeeEmail && leave.EmployeeEmail !== employeeEmail) {
+      return false;
+    }
+
+    // Only check against active statuses
+    if (!statuses.includes(leave.Status)) {
+      return false;
+    }
+
+    return doDateRangesOverlap(
+      startDate,
+      endDate,
+      leave.StartDate,
+      leave.EndDate,
+    );
+  });
+};
